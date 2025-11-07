@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block header00 %}Расписание занятий{% endblock %}
+
+{% block left_column %}
+{% if form_rasp %}
+<!--<div class="nav-params">-->
+<div class="container">
+    <form action="" method="post">
+        {{ form_rasp.csrf_token() }}
+        {{ form_rasp.hidden_tag() }}
+
+            <div class="head-flash">Найдено записей: {{ cnt }}</div>
+            <div align="right" class="nav-sbmt">{{ form_rasp.submit(class="flt_butts") }}</div>
+
+        {% for field in form_rasp if 'fr_' in field.name %}
+
+        <div class="nav-left">
+            {{ field.label }}
+        </div>
+        <div class="nav-right">
+            {% if loop.index == 1 %}
+            {{ field(class="list_wide") }}
+            {% else %}
+            {{ field(class="list_fields") }}
+            {% endif %}
+        </div>
+        {% endfor %}
+
+    </form>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if items %}
+<table class="main_table table-border" border="1" cellspacing="1" cellpadding="4">
+    <tbody>
+    <tr class="table_head">
+        <th scope="col">День недели</th>
+        <th scope="col">Начало</th>
+        <th scope="col">Окончание</th>
+        <th scope="col">Кабинет</th>
+        <th scope="col">Учебная группа</th>
+        <th scope="col">Наставник</th>
+        <th scope="col">Наименование учебного курса</th>
+    </tr>
+    {% for item in items%}
+    <tr class="table_body" {% if item.idDays % 2> 0 %} style="background-color: rgb(254, 255, 236);"
+        {% else %} style="background-color: #fff;" {% endif %}>
+        <td align="center"><a href="/main?day_id={{item.days.id}}">{{item.days.name}}</a></td>
+        <td align="center">{{item.tstart}}</td>
+        <td align="center">{{item.tend}}</td>
+        <td align="center" style="background-color: rgb{{item.kabs.color}};"><a href="/main?kab_id={{item.kabs.id}}">
+            {{item.kabs.name}}
+        </a></td>
+        <td align="center"><a class="navbar-brand" href="/main?group_id={{item.groups.id}}">
+            {{item.groups.name}} {{item.groups.comment}}</a></td>
+        <td align="center"><a class="navbar-brand" href="/main?user_id={{item.groups.users.id}}">
+            {{item.groups.users.name}}</a></td>
+        <td><a class="navbar-brand" href="/main?course_id={{item.groups.idCourses}}">
+            {{item.groups.courses.name}}</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% if uslist %}
+<p class="main_head" align="center">Посещаемость</p>
+<table border="1" cellpadding=4" cellspacing="2">
+    <tbody>
+    <tr class="table_head">
+        <th scope="col">№пп</th>
+        <th scope="col">{{ uslist.spis[0].ima_f }}</th>
+        <th scope="col">{{ uslist.spis[0].klass }}</th>
+        <th scope="col">Рейтинг</th>
+        {% for el in uslist.spis[0].present[-10:] %}
+        <th scope="col">{{ el }}</th>
+        {% endfor %}
+    </tr>
+    {% for user in uslist.spis[1:] %}
+    {% if user.navigator %}
+    <tr class="table_body">
+        {% else %}
+    <tr class="table_body" style="color: red;" title="Не оформлен ПФДО!">
+        {% endif %}
+        <td align=" center">{{ loop.index }}</td>
+        <td align=" center">{{ user.ima_f }}</td>
+        <td align=" center">{{ user.klass }}</td>
+        <td>{% for _ in range(user.stars_cnt) %}
+            <img src="{{ url_for('static', filename='images/star.png') }}" class="icon_star"
+                 title="Лидер посещаемости!">
+            {% endfor %} {% for _ in range(user.blacks_cnt) %}
+            <img src="{{ url_for('static', filename='images/black.png') }}" class="icon_star" title="Месяц прогулял!">
+            {% endfor %}
+        </td>
+        {% for el in user.present[-10:] %}
+        {% if el[0] %}
+        <td align="center" class="{{el[1]}}"><img src="{{ url_for('static', filename='images/visit.png') }}"
+                                                  class="icon_smile"></td>
+        {% else %}
+        <td align="center" class="{{el[1]}}"><img src="{{ url_for('static', filename='images/novisit.png') }}"
+                                                  title="Пропуск занятия" class="icon_smile"></td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if current_user.is_authenticated %}
+<p class="main_head" align="center">Статистика</p>
+<table class="main_table" border="1" cellspacing="1" cellpadding="4">
+    <tbody>
+    {% for i in range(6) %}
+    <tr class="table_body">
+        <th align="left">{{head[i]}}</th>
+        {% for item in uslist.stars.values() %}
+        <td>
+            {{item[i]}}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endif %}
+{% endblock %}
