@@ -60,15 +60,18 @@ def index():
 @login_required
 def welcome():
     number = db.session.execute(text('SELECT number FROM state')).one()[0]
-    film_name = db.session.execute(text(f'SELECT id, name FROM film WHERE number={number}')).one()
-    try:
-        old_vote = db.session.execute(text(f"SELECT vote FROM vote WHERE film={film_name[0]} "
-                                           f"AND user='{current_user.id}'")).one()[0]
-    except NoResultFound:
-        old_vote = -1
-    return render_template('Welcome.html',
-                           number=number, user=current_user.id, film_name=film_name[1],
-                           old_vote=old_vote)
+    if number > 0:
+        film_name = db.session.execute(text(f'SELECT id, name FROM film WHERE number={number}')).one()
+        try:
+            old_vote = db.session.execute(text(f"SELECT vote FROM vote WHERE film={film_name[0]} "
+                                               f"AND user='{current_user.id}'")).one()[0]
+        except NoResultFound:
+            old_vote = -1
+        return render_template('Welcome.html',
+                               number=number, user=current_user.id, film_name=film_name[1],
+                               old_vote=old_vote)
+    else:
+        return render_template('Welcome2.html')
 
 @app.route('/welcome', methods=['POST'])
 @login_required
@@ -85,6 +88,8 @@ def welcome2():
 @app.route('/stat', methods=['GET', 'POST'])
 def stat():
     number = db.session.execute(text('SELECT number FROM state')).one()[0]
+    if number == 0:
+        return redirect(url_for('welcome'))
     film_id = db.session.execute(text(f'SELECT name FROM film WHERE number={number}')).one()[0]
     count_users = db.session.execute(text('SELECT COUNT(id) FROM user')).one()[0]
     count_votes = db.session.execute(text("""SELECT COUNT(vote.id), film.name FROM vote 
@@ -134,4 +139,4 @@ def auto_register_user():
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.5.54', debug=True)
+    app.run(debug=True)
