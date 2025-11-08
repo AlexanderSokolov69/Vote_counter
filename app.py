@@ -139,4 +139,6 @@ def auto_register_user():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    host = '172.16.1.42'
+    port = 8000
+    app.run(host=host, port=port, debug=True)

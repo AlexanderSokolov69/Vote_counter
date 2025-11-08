@@ -1,9 +1,11 @@
 import sqlite3
 import sys
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QBrush
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QTableWidgetItem, QMessageBox
+from sqlalchemy import text
+
 from Ui_panel import Ui_MainWindow
 
 class MyWindow(QMainWindow, Ui_MainWindow):
@@ -29,9 +31,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t2RefreshButton.clicked.connect(self.t2_refresh)
         self.t3NextButton.clicked.connect(self.t3_next)
         self.t3PrevButton.clicked.connect(self.t3_prev)
+        self.t3StopButton.clicked.connect(self.t3_stop)
+        self.t1ClearButton.clicked.connect(self.t1_clear_vote)
 
         self.vote_numbers = []
         self.current_vote = 0
+
+        self.t3_timer = QTimer()
+        self.t3_timer.timeout.connect(self.t3_stistica)
+
+    def t3_stop(self):
+        self.current_vote = 0
+        self.statusbar.showMessage('Голосование остановлено')
+        self.set_current_vote(self.current_vote)
 
     def t3_next(self):
         if self.current_vote == 0:
@@ -71,12 +83,51 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 
     def tabChanged(self, a0):
+        self.t3_timer.stop()
         match a0:
+            case 0:
+                self.t1_prepare()
             case 1:
                 self.update_tab2()
                 self.update_tab2_users()
             case 2:
                 self.prepare_voting()
+                self.t3_timer.start(1000)
+
+    def t1_prepare(self):
+        cur = self.con.cursor()
+        stat = cur.execute('SELECT COUNT(*) FROM vote').fetchone()[0]
+        self.t1Stat.setText(str(f"{stat} голосов"))
+        self.t1Stat.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+    def t1_clear_vote(self):
+        ret = QMessageBox.question(self, 'Очистка', 'Удалить ВСЕ голоса?',
+                                   QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if ret == QMessageBox.StandardButton.Yes:
+            cur = self.con.cursor()
+            cur.execute('DELETE FROM vote')
+            self.con.commit()
+            self.t1_prepare()
+
+    def t3_stistica(self):
+        cur = self.con.cursor()
+        try:
+            self.t3StatTable.clear()
+            count_votes = cur.execute("""SELECT film.number, COUNT(vote.id), film.name FROM vote 
+                                        LEFT JOIN film on film.id = vote.film
+                                        GROUP BY film.name
+                                        ORDER BY film.number""").fetchall()
+            self.t3StatTable.setRowCount(len(count_votes))
+            self.t3StatTable.setColumnCount(len(count_votes[0]))
+            self.t3StatTable.setHorizontalHeaderLabels(['№ этапа', 'Проголосовало', 'Наименование'])
+            for row, rec in enumerate(count_votes):
+                for col, item in enumerate(rec):
+                    self.t3StatTable.setItem(row, col, QTableWidgetItem(str(item)))
+                    if isinstance(item, int):
+                        self.t3StatTable.item(row, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.t3StatTable.resizeColumnsToContents()
+        except Exception:
+            self.statusbar.showMessage('Голосов нет')
 
     def prepare_voting(self):
         cur = self.con.cursor()
