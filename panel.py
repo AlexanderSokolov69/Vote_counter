@@ -9,7 +9,7 @@ from sqlalchemy import text
 from Ui_panel import Ui_MainWindow
 
 TIMER_TIK = 500
-FONT_MAIN = 13
+FONT_MAIN = 14
 FONT_ITOG = int(FONT_MAIN * 1.3)
 WIDTH_APP = 1200
 HEIGHT_APP = 700
@@ -52,12 +52,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.vote_numbers = []
         self.current_vote = 0
 
+        self.t1_timer = QTimer()
+        self.t1_timer.timeout.connect(self.t1_users_timer)
         self.t3_timer = QTimer()
         self.t3_timer.timeout.connect(self.t3_stistica)
         self.t4_timer = QTimer()
         self.t4_timer.timeout.connect(self.t4_itog)
         self.tabWidget.setCurrentIndex(0)
         self.tabWidget.currentChanged.emit(0)
+
+    def t1_users_timer(self):
+        self.update_tab2_users()
 
     def t1_clear_win(self):
         cur = self.con.cursor()
@@ -133,14 +138,15 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 
     def tabChanged(self, a0):
+        self.t1_timer.stop()
         self.t3_timer.stop()
         self.t4_timer.stop()
         match a0:
             case 0:
                 self.t1_prepare()
+                self.t1_timer.start(TIMER_TIK * 2)
             case 1:
                 self.update_tab2()
-                self.update_tab2_users()
             case 2:
                 self.prepare_voting()
                 self.t3_timer.start(TIMER_TIK)
@@ -148,6 +154,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.t4_timer.start(TIMER_TIK * 3)
 
     def t1_prepare(self):
+        self.t3StopButton.click()
         cur = self.con.cursor()
         stat = cur.execute('SELECT COUNT(*) FROM vote').fetchone()[0]
         self.t1Stat.setText(str(f"{stat} голосов"))
@@ -223,7 +230,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t2Users.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.tableUsers.setRowCount(len(data))
             self.tableUsers.setColumnCount(len(data[0]))
-            self.tableUsers.setHorizontalHeaderLabels([desc[0] for desc in cur.description])
+            self.tableUsers.setHorizontalHeaderLabels(['Участник'])
             for row, rec in enumerate(data):
                 for col, item in enumerate(rec):
                     self.tableUsers.setItem(row, col, QTableWidgetItem(str(item)))

@@ -3,22 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <title>Welcome</title>
 </head>
 <body>
+    <h2>Голосование №{{number}}</h2>
+<a href="/stat">
+<button width="250"><img src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+        </button>
+    </a>
     {% if old_vote < 0 %}
         <h4>Вы голосуете с адреса: {{ user }}!</h4>
     {% else %}
-        <h1>Ваш голос учтен: {{old_vote}} баллов</h1>
+        <h2>Ваш голос учтен: {{old_vote}} баллов</h2>
     {% endif %}
-    <h2>Голосование №{{number}}</h2>
-    <h1> Название работы: {{film_name}}</h1>
-    <h1>
+    <h3> Название работы:</h3>
+    <h2><p> {{film_name}}</p></h2>
+    <h2>
     <form method="POST">
-        <p><label>Оцените работу: <input name="range" type="range" min="0" max="10" value="{{old_vote}}" step="1"></label></p>
-        <p><button class="button" type="submit">Принять решение!</button></p>
+        <p><label>Оцените работу:
+        </label></p>
+        <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" step="1">
+        <p>
+            <button class="button" type="submit" width="400">
+                <img src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+            </button>
+        </p>
 
     </form>
-        </h1>
+        </h2>
 </body>
+<style>
+  input[type="range"] {
+    -webkit-appearance: none; /* Убираем стандартный стиль */
+    width: 380px; /* Укажите нужную ширину */
+    background: transparent; /* Отключаем фоновый цвет */
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: blue; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+  }
+</style>
+
 </html>

@@ -6,12 +6,16 @@
     <title>Welcome</title>
 </head>
 <body>
+<a href="/">
+<button width="250"><img src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+        </button>
+    </a>
         <h4>Текущее голосование: {{ number }}</h4>
         <h4>Название работы: {{ film_id }}</h4>
         <h4>Голосует участников: {{ count_users }}</h4>
-    <h2>
+    <h3>
     <form method="POST">
-        <p><button class="button" type="submit">Обновить!</button></p>
+        <p><button class="button" type="submit"><h3>Обновить!</h3></button></p>
     </form>
       <table class="table" border="2" cellpadding="5">
         <tbody>
@@ -27,6 +31,6 @@
         {% endfor %}
         </tbody>
       </table>
-        </h2>
+        </h3>
 </body>
 </html>

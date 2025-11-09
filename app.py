@@ -62,6 +62,7 @@ def welcome():
     number = db.session.execute(text('SELECT number FROM state')).one()[0]
     if number > 0:
         film_name = db.session.execute(text(f'SELECT id, name FROM film WHERE number={number}')).one()
+        max_vote = db.session.execute(text(f"SELECT maxvote FROM state")).one()[0]
         try:
             old_vote = db.session.execute(text(f"SELECT vote FROM vote WHERE film={film_name[0]} "
                                                f"AND user='{current_user.id}'")).one()[0]
@@ -69,21 +70,24 @@ def welcome():
             old_vote = -1
         return render_template('Welcome.html',
                                number=number, user=current_user.id, film_name=film_name[1],
-                               old_vote=old_vote)
+                               old_vote=old_vote, max_vote=max_vote)
     else:
         return render_template('Welcome2.html')
 
 @app.route('/welcome', methods=['POST'])
 @login_required
 def welcome2():
-    number = db.session.execute(text('SELECT number FROM state')).one()[0]
-    film_id = db.session.execute(text(f'SELECT id FROM film WHERE number={number}')).one()[0]
-    vote = request.form.get('range')
-    db.session.execute(text(f"DELETE FROM vote WHERE film={film_id} AND user='{current_user.id}'"))
-    new_vote = Vote(film=film_id, vote=vote, user=current_user.id)
-    db.session.add(new_vote)
-    db.session.commit()
-    return redirect(url_for('welcome'))
+    try:
+        number = db.session.execute(text('SELECT number FROM state')).one()[0]
+        film_id = db.session.execute(text(f'SELECT id FROM film WHERE number={number}')).one()[0]
+        vote = request.form.get('range')
+        db.session.execute(text(f"DELETE FROM vote WHERE film={film_id} AND user='{current_user.id}'"))
+        new_vote = Vote(film=film_id, vote=vote, user=current_user.id)
+        db.session.add(new_vote)
+        db.session.commit()
+        return redirect(url_for('welcome'))
+    except Exception:
+        return redirect(url_for('stat'))
 
 @app.route('/stat', methods=['GET', 'POST'])
 def stat():
@@ -139,6 +143,6 @@ def auto_register_user():
 
 
 if __name__ == '__main__':
-    host = '172.16.1.42'
-    port = 8000
+    host = '192.168.5.54'
+    port = 5555
     app.run(host=host, port=port, debug=True)
