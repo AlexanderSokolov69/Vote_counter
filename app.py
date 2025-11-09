@@ -1,5 +1,3 @@
-from typing import Any
-
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
@@ -25,11 +23,13 @@ login_manager.login_view = 'login'  # Страница для редиректа
 class User(UserMixin, db.Model):
     id = db.Column(db.String, primary_key=True)
 
+
 class Film(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String)
     author = db.Column(db.String)
     number = db.Column(db.Integer, unique=True)
+
 
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -37,9 +37,15 @@ class Vote(db.Model):
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
     vote = db.Column(db.Integer)
 
+
 class State(db.Model):
     number = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.String)
+
+
+class Winners(db.Model):
+    user = db.Column(db.String, primary_key=True)
+
 
 # Создание базы данных
 with app.app_context():
@@ -72,7 +78,10 @@ def welcome():
                                number=number, user=current_user.id, film_name=film_name[1],
                                old_vote=old_vote, max_vote=max_vote)
     else:
-        return render_template('Welcome2.html')
+        winners = [user[0] for user in db.session.execute(text(f'SELECT user FROM winners')).all()]
+        alert = current_user.id in winners
+        return render_template('Welcome2.html', alert=alert)
+
 
 @app.route('/welcome', methods=['POST'])
 @login_required
@@ -89,6 +98,7 @@ def welcome2():
     except Exception:
         return redirect(url_for('stat'))
 
+
 @app.route('/stat', methods=['GET', 'POST'])
 def stat():
     number = db.session.execute(text('SELECT number FROM state')).one()[0]
@@ -103,6 +113,7 @@ def stat():
     return render_template('stat.html',
                            count_users=count_users, count_votes=count_votes, film_id=film_id,
                            number=number)
+
 
 @app.route('/login')
 def login():
@@ -120,13 +131,13 @@ def login():
     return redirect(url_for('welcome'))
 
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
-
+# @app.route('/logout')
+# @login_required
+# def logout():
+#     logout_user()
+#     return redirect(url_for('index'))
+#
+#
 @app.before_request
 def auto_register_user():
     user_ip = request.remote_addr

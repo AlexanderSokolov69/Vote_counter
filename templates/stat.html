@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <title>Welcome</title>
 </head>
 <body>
+<div class="main-window">
 <a href="/">
-<button width="250"><img src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+<button><img width="380" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
         </button>
     </a>
         <h4>Текущее голосование: {{ number }}</h4>
         <h4>Название работы: {{ film_id }}</h4>
         <h4>Голосует участников: {{ count_users }}</h4>
-    <h3>
     <form method="POST">
-        <p><button class="button" type="submit"><h3>Обновить!</h3></button></p>
+        <p><button class="button" type="submit">Обновить!</button></p>
     </form>
-      <table class="table" border="2" cellpadding="5">
+      <table class="table">
         <tbody>
         <tr>
           <th>Наименование работы</th>
@@ -31,6 +32,6 @@
         {% endfor %}
         </tbody>
       </table>
-        </h3>
+</div>
 </body>
 </html>

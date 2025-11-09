@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <title>Welcome</title>
 </head>
 <body>
-    <h1> Голосование не началось...</h1>
+<div class="main-window">
+    <h1>
+        {% if alert %}
+    <div class="winner">!!! ПОЛУЧИ ПРИЗ !!!</div>
+     {% else %}
+    Голосование не началось...
+    {% endif %}
+    </h1>
     <h1>
     <form method="GET">
-<button class="button" type="submit" width="250"><img src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+<button class="button" type="submit"><img width="380" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
         </button>
     </form>
         </h1>
+</div>
 </body>
 </html>

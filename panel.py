@@ -13,6 +13,8 @@ FONT_MAIN = 14
 FONT_ITOG = int(FONT_MAIN * 1.3)
 WIDTH_APP = 1200
 HEIGHT_APP = 700
+WIDTH = 1920
+HEIGHT = 1080
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -20,13 +22,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.table_refresh = False
 
-        WIDTH = self.screen().size().width()
-        HEIGHT = self.screen().size().height()
-        screen_w, screen_h = WIDTH_APP, HEIGHT_APP
+        screen_w = self.screen().size().width()
+        screen_h = self.screen().size().height()
+        app_w, app_h = WIDTH_APP, HEIGHT_APP
 
-        self.setGeometry(WIDTH // 2 - screen_w // 2,
-                         HEIGHT // 2 - screen_h // 2,
-                         screen_w, screen_h)
+        self.setGeometry(screen_w // 2 - app_w // 2,
+                         screen_h // 2 - app_h // 2,
+                         app_w, app_h)
         self.setWindowTitle('Онлайн голосование')
 
         self.con = sqlite3.connect('instance/users.db')
@@ -80,6 +82,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             return
         ret = QMessageBox.question(self, 'Оповещение', f"Оповестить {len(users)} участников?")
         if ret == QMessageBox.StandardButton.Yes:
+            self.t3StopButton.click()
             sql = """INSERT INTO winners VALUES (?)"""
             cur.executemany(sql, users)
             self.con.commit()
@@ -101,6 +104,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.set_current_vote(self.current_vote)
 
     def t3_next(self):
+        self.statusbar.showMessage('')
         if self.current_vote == 0:
             self.current_vote = self.vote_numbers[0]
         else:
@@ -119,10 +123,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if i <= 0:
                 raise IndexError()
             self.current_vote = self.vote_numbers[i - 1]
+            self.set_current_vote(self.current_vote)
+            self.statusbar.showMessage('')
         except IndexError:
-            self.current_vote = 0
-            self.statusbar.showMessage('Голосование остановлено')
-        self.set_current_vote(self.current_vote)
+            self.t3_stop()
 
     def t2_refresh(self):
         self.tabChanged(1)
@@ -157,12 +161,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t3StopButton.click()
         cur = self.con.cursor()
         stat = cur.execute('SELECT COUNT(*) FROM vote').fetchone()[0]
-        self.t1Stat.setText(str(f"{stat} голосов"))
+        self.t1Stat.setText(str(stat))
         self.t1Stat.setAlignment(Qt.AlignmentFlag.AlignCenter)
         max_vote = cur.execute('SELECT maxvote FROM state').fetchone()[0]
         self.t1MaxVote.setValue(max_vote)
-        win = cur.execute('SELECT COUNT(*) FROM winners').fetchone()[0]
-        self.t1CountWin.setText(str(win))
+        winner = cur.execute('SELECT COUNT(*) FROM winners').fetchone()[0]
+        self.t1CountWin.setText(str(winner))
 
     def t1on_change_max_vote(self, num):
         sql = f"UPDATE state SET maxvote = {num}"
@@ -190,11 +194,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t3StatTable.setRowCount(len(count_votes))
             self.t3StatTable.setColumnCount(len(count_votes[0]))
             self.t3StatTable.setHorizontalHeaderLabels(['№ этапа', 'Проголосовало', 'Наименование'])
+            voting = False
             for row, rec in enumerate(count_votes):
                 for col, item in enumerate(rec):
                     self.t3StatTable.setItem(row, col, QTableWidgetItem(str(item)))
                     if isinstance(item, int):
                         self.t3StatTable.item(row, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                    if rec[0] == self.t3LcdCount.value():
+                        self.t3StatTable.item(row, col).setBackground(QColor('#ff0000'))
+                        voting = True
+            self.labelVoting.setVisible(voting)
             self.t3StatTable.resizeColumnsToContents()
             sql = """SELECT COUNT(*) as users, 
                         (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote)) as etaps , 
@@ -205,8 +214,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t3Etap.setText(str(stats[1]))
             self.t3Votes.setText(str(stats[2]))
             self.t3Stat.setText(f"{stats[2]/stats[1]:.2f}")
-        except Exception as e:
-            self.statusbar.showMessage('Голосов нет. ' + str(e))
+            self.statusbar.showMessage('')
+        except Exception:
+            self.statusbar.showMessage('Голосов нет.')
 
     def prepare_voting(self):
         cur = self.con.cursor()
@@ -245,20 +255,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if ret == QMessageBox.StandardButton.Yes:
             try:
-                id = self.tableWidget.item(item.row(), 0).text()
+                id_ = self.tableWidget.item(item.row(), 0).text()
                 sql = """SELECT * FROM film WHERE id=?"""
                 cur = self.con.cursor()
-                data = list(cur.execute(sql, (id,)).fetchone())
-                old_field = data[item.column()]
+                data = list(cur.execute(sql, (id_,)).fetchone())
+                # old_field = data[item.column()]
                 data[item.column()] = item.text()
                 numbers = [str(num[0]) for num in cur.execute("SELECT number FROM film").fetchall()]
                 if item.column() != 4 or str(data[3]) not in numbers:
-                    cur.execute("DELETE FROM film WHERE id=?", (id,))
+                    cur.execute("DELETE FROM film WHERE id=?", (id_,))
                     sql = "INSERT INTO film VALUES(?, ?, ?, ?)"
                     cur.execute(sql, data)
                     self.con.commit()
                 else:
-                    # self.tableWidget.setItem(item.row(), item.column(), QTableWidgetItem(str(old_field)))
                     self.statusbar.showMessage('Не уникальный номер')
             except Exception as e:
                 self.statusBar().showMessage(str(e))
@@ -269,8 +278,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         ret = QMessageBox.question(self, 'Удаление', f'Удалить {len(ids)} записей?',
                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if ret == QMessageBox.StandardButton.Yes:
-            data = ', '.join([str(id) for id in ids])
-            sql = f"""DELETE FROM film WHERE id in ({data})"""
+            data = ', '.join([str(id_) for id_ in ids])
+            sql = f"""DELETE FROM film WHERE id_ in ({data})"""
             cur = self.con.cursor()
             cur.execute(sql)
             self.con.commit()
@@ -318,9 +327,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             data = cur.execute(sql).fetchall()
             self.t4ResultTable.setRowCount(len(data))
             self.t4ResultTable.setColumnCount(len(data[0]))
-            header = ['id', 'Автор', "Наименование работы", "№ этапа","Голосов", "Макс.балл", "Мин.балл", "Сумма", "Средний балл"]
+            header = ['id', 'Автор', "Наименование работы", "№ этапа","Голосов", "Макс.балл",
+                      "Мин.балл", "Сумма", "Средний балл"]
             self.t4ResultTable.setHorizontalHeaderLabels(header)
-            best_film_id = data[0][0]
             for row, rec in enumerate(data):
                 for col, item in enumerate(rec):
                     self.t4ResultTable.setItem(row, col, QTableWidgetItem(str(item)))
@@ -331,21 +340,29 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t4ResultTable.hideColumn(0)
             self.t4ResultTable.resizeColumnsToContents()
             self.statusbar.showMessage('')
-            # self.t4ResultTable.setSortingEnabled(True)
-            sql = f"""SELECT v.user, v.vote FROM vote v
+            self.t4UsersTable.clear()
+            if data:
+                best_film_id = data[0][0]
+            else:
+                best_film_id = 0
+            sql = f"""SELECT v.user, v.vote, 
+                    ROUND((SELECT SUM(v2.vote) * 1.0 / (COUNT(v2.vote)) FROM vote v2 WHERE v2.user=v.user), 2) as aver
+                    FROM vote v
                     WHERE v.film = {best_film_id}
                     GROUP BY v.user
-                    ORDER BY vote DESC"""
+                    ORDER BY vote DESC, aver"""
             users = cur.execute(sql).fetchall()
             self.t4UsersTable.setRowCount(len(users))
             self.t4UsersTable.setColumnCount(len(users[0]))
-            self.t4UsersTable.setHorizontalHeaderLabels(['Участник', 'Балл'])
+            self.t4UsersTable.setHorizontalHeaderLabels(['Участник', 'Балл', 'Ср.балл'])
             for row, user in enumerate(users):
                 for col, item in enumerate(user):
                     self.t4UsersTable.setItem(row, col, QTableWidgetItem(str(item)))
             self.t4UsersTable.resizeColumnsToContents()
-        except Exception as e:
-            self.statusBar().showMessage(str(e))
+            if self.current_vote == 0:
+                self.t4_timer.stop()
+        except Exception:
+            self.statusBar().showMessage('Итогов нет')
 
 def except_hook(exc_type, exc_value, exc_tb):
     sys.__excepthook__(exc_type, exc_value, exc_tb)
