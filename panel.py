@@ -2,7 +2,7 @@ import sqlite3
 import sys
 
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QBrush, QColor, QFont
+from PyQt6.QtGui import QBrush, QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QTableWidgetItem, QMessageBox
 from sqlalchemy import text
 
@@ -30,6 +30,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                          screen_h // 2 - app_h // 2,
                          app_w, app_h)
         self.setWindowTitle('Онлайн голосование')
+        self.pix_vote_5555 = QPixmap("static/images/voteflow-5555.png")
+        self.pix_title = QPixmap("static/images/title.png")
+        self.pix_vote = QPixmap("static/images/vote.png")
+        self.label_9.setPixmap(self.pix_title)
+        self.label_17.setPixmap(self.pix_vote_5555)
+        self.labelVoting.setPixmap(self.pix_vote)
+        self.label_12.setPixmap(self.pix_title)
 
         self.con = sqlite3.connect('instance/users.db')
         self.tabWidget.currentChanged.connect(self.tabChanged)
@@ -62,6 +69,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t4_timer.timeout.connect(self.t4_itog)
         self.tabWidget.setCurrentIndex(0)
         self.tabWidget.currentChanged.emit(0)
+
+    def resource_loader(self):
+        ...
 
     def t1_users_timer(self):
         self.update_tab2_users()
