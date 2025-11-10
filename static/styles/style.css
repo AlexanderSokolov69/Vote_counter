@@ -14,6 +14,46 @@
     font-family: Arial;
 }
 
+.my-button {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: lightgreen;
+    padding: 12px 24px;
+    font-size: 150%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+
+    background: linear-gradient(145 deg, #6ee7b7, #3b82f6);
+    color: red;
+    font-family: bold;
+    /* Тени для объема */
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.3),           /* Внешняя тень */
+    -4px -4px 8px rgba(255, 255, 255, 0.2),  /* Светлый блик */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2), /* Внутреннее свечение */
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2);  /* Внутренняя тень */
+}
+
+/* Эффекты при взаимодействии */
+.my-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    6px 6px 12px rgba(0, 0, 0, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.2);
+}
+
+.my-button:active {
+  transform: translateY(1px);
+  box-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    -2px -2px 4px rgba(255, 255, 255, 0.2),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+}
+
 .button {
     font-size: 150%;
     border-radius: 10%;
@@ -34,7 +74,7 @@
     border: 1px solid var(--color-border-dark);
     border-collapse: collapse;
     margin: 0 auto;
-    width: 400px;
+    width: 340px;
 }
 
 .smile_table {
@@ -43,7 +83,7 @@
     /* border: 1px solid var(--color-border-dark);
     border-collapse: collapse; */
     margin: 0 auto;
-    width: 400px;
+    width: 360px;
 }
 
 h3 {
@@ -51,7 +91,7 @@ h3 {
 }
 
 .user-info {
-    font-size: 180%;
+    font-size: 150%;
     font-weight: bold;
     color: brown;
 }
@@ -59,7 +99,7 @@ h3 {
 input[type="range"] {
     -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
     appearance: none; /* Убираем стандартный стиль для других браузеров */
-    width: 380px; /* Укажите нужную ширину */
+    width: 300px; /* Укажите нужную ширину */
     background: transparent; /* Отключаем фоновый цвет */
 }
 

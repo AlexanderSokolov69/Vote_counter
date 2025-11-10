@@ -9,11 +9,11 @@
 </head>
 <body>
 <div class="main-window">
-    <h2>Позиция № {{number}}</h2>
 <a href="/stat">
-<button><img width="380" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+<button><img width="340" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
         </button>
     </a>
+    <h2>Позиция № {{number}}</h2>
     <div class="user-info">
     {% if old_vote < 0 %}
         Вы голосуете с адреса: {{ user }}!
@@ -42,13 +42,15 @@
 
 
         <p>
-            <button class="button" type="submit" width="400">
-                <img src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+            <button class="my-button" type="submit">
+                <img width="320" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
             </button>
-        </p>
 
+        </p>
     </form>
-        </h2>
+    <div>
+    <img width="180" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+    </div>
     </div>
 </body>
 
