@@ -30,9 +30,17 @@
         </table>
         </div>
     <form method="POST">
-        <h2>Оцените работу:
-        </h2>
-        <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" step="1">
+        <table class="smile_table">
+            <tbody>
+            <tr><th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
+                <th>Оцените работу:</th>
+                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th></tr>
+
+            </tbody>
+        </table>
+     <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" step="1">
+
+
         <p>
             <button class="button" type="submit" width="400">
                 <img src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>

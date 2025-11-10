@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="img">
+    <file>static/images/title.png</file>
+    <file>static/images/vote.png</file>
+    <file>static/images/voteflow-5555.png</file>
+  </qresource>
+</RCC>

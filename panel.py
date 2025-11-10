@@ -279,7 +279,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if ret == QMessageBox.StandardButton.Yes:
             data = ', '.join([str(id_) for id_ in ids])
-            sql = f"""DELETE FROM film WHERE id_ in ({data})"""
+            sql = f"""DELETE FROM film WHERE id in ({data})"""
             cur = self.con.cursor()
             cur.execute(sql)
             self.con.commit()
