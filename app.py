@@ -73,19 +73,19 @@ def index():
 @login_required
 def welcome():
     try:
-        number = db.session.execute(text('SELECT number FROM state')).one()[0]
+        number = db.session.execute(text('SELECT number FROM state')).fetchone()[0]
     except NoResultFound:
         number = 0
     if number > 0:
         try:
-            film_name = db.session.execute(text(f'SELECT id, name FROM film WHERE number={number}')).one()
-            max_vote = db.session.execute(text(f"SELECT maxvote FROM state")).one()[0]
+            film_name = db.session.execute(text(f'SELECT id, name FROM film WHERE number={number}')).fetchone()
+            max_vote = db.session.execute(text(f"SELECT maxvote FROM state")).fetchone()[0]
         except NoResultFound:
-            film_name = ''
+            film_name = (0, '_')
             max_vote = 10
         try:
-            old_vote = db.session.execute(text(f"SELECT vote FROM vote WHERE film={film_name[0]} "
-                                               f"AND users='{current_user.id}'")).one()[0]
+            sql =f"SELECT vote FROM vote WHERE film={film_name[0]} AND users='{current_user.id.strip()}'"
+            old_vote = db.session.execute(text(sql)).one()[0]
         except NoResultFound:
             old_vote = -1
         return render_template('Welcome.html',
@@ -101,8 +101,8 @@ def welcome():
 @login_required
 def welcome2():
     try:
-        number = db.session.execute(text('SELECT number FROM state')).one()[0]
-        film_id = db.session.execute(text(f'SELECT id FROM film WHERE number={number}')).one()[0]
+        number = db.session.execute(text('SELECT number FROM state')).fetchone()[0]
+        film_id = db.session.execute(text(f'SELECT id FROM film WHERE number={number}')).fetchone()[0]
         vote = request.form.get('range')
         db.session.execute(text(f"DELETE FROM vote WHERE film={film_id} AND users='{current_user.id}'"))
         new_vote = Vote(film=film_id, vote=vote, users=current_user.id)
@@ -117,7 +117,7 @@ def welcome2():
 @app.route('/stat', methods=['GET', 'POST'])
 def stat():
     try:
-        number = db.session.execute(text('SELECT number FROM state')).one()[0]
+        number = db.session.execute(text('SELECT number FROM state')).fetchone()[0]
     except NoResultFound:
         number = 0
     if number == 0:
@@ -126,8 +126,8 @@ def stat():
     count_users = 0
     count_votes = 0
     try:
-        film_id = db.session.execute(text(f'SELECT name FROM film WHERE number={number}')).one()[0]
-        count_users = db.session.execute(text('SELECT COUNT(id) FROM users')).one()[0]
+        film_id = db.session.execute(text(f'SELECT name FROM film WHERE number={number}')).fetchone()[0]
+        count_users = db.session.execute(text('SELECT COUNT(id) FROM users')).fetchone()[0]
         count_votes = db.session.execute(text("""SELECT COUNT(vote.id), film.name FROM vote 
                                     LEFT JOIN film on film.id = vote.film
                                     GROUP BY film.name, film.number

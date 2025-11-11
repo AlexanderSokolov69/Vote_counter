@@ -6,12 +6,32 @@
     color: red;
     font-weight: bold;
     font-size: 110%;
+    padding: 20px 0;
+}
+
+.vote {
+    color: darkgreen;
+    font-weight: bold;
+    font-size: 40px;
+    padding: 40px 0;
+}
+
+.vote-number {
+    font-size: 120%;
+    color: #12437e;
+    font-weight: bold;
 }
 
 .main-window {
     text-align: center;
     line-height: 1.5;
     font-family: Arial;
+    border: 1px;
+}
+
+.winner {
+    font-size: 150%;
+    color: red;
 }
 
 .my-button {
@@ -27,7 +47,7 @@
     position: relative;
     transition: all 0.2s ease;
 
-    background: linear-gradient(145 deg, #6ee7b7, #3b82f6);
+    /*background: linear-gradient(#6adfb1, #3878e1);*/
     color: red;
     font-family: bold;
     /* Тени для объема */
@@ -54,6 +74,46 @@
     inset 3px 3px 6px rgba(0, 0, 0, 0.2);
 }
 
+.my-button-top {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 12px 24px;
+    margin-top: 5px;
+    font-size: 150%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+
+    background: linear-gradient(#6adfb1, #3878e1);
+    color: white;
+    font-family: bold;
+    /* Тени для объема */
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.3),           /* Внешняя тень */
+    -4px -4px 8px rgba(255, 255, 255, 0.2),  /* Светлый блик */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2), /* Внутреннее свечение */
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2);  /* Внутренняя тень */
+}
+
+/* Эффекты при взаимодействии */
+.my-button-top:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    6px 6px 12px rgba(0, 0, 0, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.2);
+}
+
+.my-button-top:active {
+  transform: translateY(1px);
+  box-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    -2px -2px 4px rgba(255, 255, 255, 0.2),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+}
+
 .button {
     font-size: 150%;
     border-radius: 10%;
@@ -63,9 +123,9 @@
 
 .table td, .table th {
     border: 1px solid var(--color-border-dark);
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .table {
@@ -74,7 +134,7 @@
     border: 1px solid var(--color-border-dark);
     border-collapse: collapse;
     margin: 0 auto;
-    width: 340px;
+    width: 300px;
 }
 
 .smile_table {
@@ -93,7 +153,13 @@ h3 {
 .user-info {
     font-size: 150%;
     font-weight: bold;
-    color: brown;
+    color: #ff0000;
+    padding: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.smile-img {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 input[type="range"] {
@@ -210,7 +276,7 @@ h1 {
 .slider-container {
     position: relative;
     margin: 0px 0;
-    padding: 20px;
+    padding: 2px;
 }
 
 .slider-label {
@@ -319,7 +385,7 @@ h1 {
 /* Стили для всплывающего значения */
 .value-popup {
     position: absolute;
-    top: -45px;
+    top: -60px;
     left: 50%;
     transform: translateX(-50%);
     background: #3498db;
@@ -386,16 +452,16 @@ h1 {
 
 .qrcode-container {
     position: relative;
-    margin: 20px 0;
-    padding: 20px;
-
+    margin: 10px 0;
+}
 /* ==================================================== */
 .btn-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: #f0f0f0;
+    padding: 20px;
+    /*height: 100vh;*/
+    /*background: #f0f0f0;*/
 
 }
 
@@ -446,7 +512,7 @@ h1 {
 
 .heart {
     position: absolute;
-    font-size: 14px;
+    font-size: 40px;
     color: #ff2963;
     opacity: 0;
     pointer-events: none;

@@ -8,21 +8,23 @@
 </head>
 <body>
 <div class="main-window">
-    <h1>
-        {% if alert %}
-    <div class="winner">!!! ПОЛУЧИ ПРИЗ !!!</div>
-     {% else %}
-    Голосование не началось...
-    {% endif %}
-    </h1>
-    <h1>
+
     <form id="autoRefreshForm" method="GET">
-<button class="my-button" type="submit"><img width="340" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+<button class="my-button-top" type="submit"><img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
         </button>
     </form>
-        </h1>
-        <div>
-    <img width="280" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+       {% if alert %}
+    <div class="winner">!!! ПОЛУЧИ ПРИЗ !!!</div>
+     {% else %}
+    <div class="vote">Голосование не началось...</div>
+    {% endif %}
+
+        <div class="winner">
+        {% if alert %}
+            <img width="200" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/>
+     {% else %}
+        <img width="280" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+    {% endif %}
     </div>
 
 </div>
