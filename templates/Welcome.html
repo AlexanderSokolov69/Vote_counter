@@ -38,20 +38,121 @@
 
             </tbody>
         </table>
-     <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" step="1">
+        <div class="slider-container">
+            <input name="range"  type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
+            <div class="value-popup" id="volume-popup"></div>
+        </div>
 
-
-        <p>
+    <div class="btn-container">
             <button class="my-button" type="submit">
+                <div class="btn-content">
                 <img width="320" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                </div>
             </button>
-
-        </p>
+    </div>
     </form>
-    <div>
+    <div class="qrcode-container">
     <img width="180" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
     </div>
     </div>
+<script>
+    // Функция для обновления позиции всплывающего значения
+    function updatePopupPosition(slider, popup) {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const value = parseFloat(slider.value);
+
+        // Вычисляем позицию в процентах
+        const percent = (value - min) / (max - min) * 100;
+
+        // Обновляем позицию всплывающего значения
+        popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
+
+        // Обновляем текст всплывающего значения
+        if (slider.id === 'temp-slider') {
+            popup.textContent = `${value}°C`;
+        } else if (slider.id === 'battery-slider') {
+            popup.textContent = `${value}%`;
+        } else {
+            popup.textContent = value;
+        }
+    }
+
+    // Функция для инициализации ползунка
+    function initSlider(sliderId, popupId, outputId) {
+        const slider = document.getElementById(sliderId);
+        const popup = document.getElementById(popupId);
+        const output = document.getElementById(outputId);
+
+        // Инициализация позиции всплывающего значения
+        updatePopupPosition(slider, popup);
+
+        // Обновление при перемещении ползунка
+        slider.addEventListener('input', function() {
+            // Обновляем всплывающее значение
+            updatePopupPosition(slider, popup);
+
+            // Обновляем вывод значения
+            if (sliderId === 'temp-slider') {
+                output.textContent = `${this.value}°C`;
+            } else if (sliderId === 'battery-slider') {
+                output.textContent = `${this.value}%`;
+            } else {
+                output.textContent = this.value;
+            }
+        });
+
+        // Показываем всплывающее значение при активации ползунка
+        slider.addEventListener('mousedown', function() {
+            popup.style.opacity = '1';
+        });
+
+        // Скрываем всплывающее значение при отпускании
+        slider.addEventListener('mouseup', function() {
+            popup.style.opacity = '0';
+        });
+
+        // Для touch-устройств
+        slider.addEventListener('touchstart', function() {
+            popup.style.opacity = '1';
+        });
+        slider.addEventListener('touchend', function() {
+            popup.style.opacity = '0';
+        });
+    }
+
+    // Инициализация всех ползунков
+    document.addEventListener('DOMContentLoaded', function() {
+        initSlider('volume-slider', 'volume-popup', 'volume-output');
+    });
+
+</script>
+<script>
+       const button = document.querySelector('.my-button');
+
+        button.addEventListener('click', function(e) {
+            // Создаем сердечко
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.classList.add('heart');
+
+            // Позиционируем относительно места клика
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+
+            button.appendChild(heart);
+
+            // Удаляем элемент после анимации
+            setTimeout(() => {
+                heart.remove();
+            }, 1000);
+        });
+
+    </script>
 </body>
 
 </html>
