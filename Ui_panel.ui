@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1198</width>
+    <width>1220</width>
     <height>674</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -319,7 +319,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="rc_panel.qrc">static/images/voteflow-5555.png</pixmap>
+                <pixmap>static/images/voteflow-5555.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -403,9 +403,9 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="t2RefreshButton">
+         <widget class="QPushButton" name="t2LoadButton">
           <property name="text">
-           <string>Обновить данные в таблицах</string>
+           <string>Загрузить список работ с диска (Текстовый файл *.csv | Разделитель - ;)</string>
           </property>
          </widget>
         </item>
@@ -486,7 +486,7 @@
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="rc_panel.qrc">static/images/vote.png</pixmap>
+              <pixmap>static/images/vote.png</pixmap>
              </property>
             </widget>
            </item>
@@ -753,7 +753,7 @@
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="rc_panel.qrc">static/images/title.png</pixmap>
+              <pixmap>static/images/title.png</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -787,8 +787,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1198</width>
-     <height>22</height>
+     <width>1220</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

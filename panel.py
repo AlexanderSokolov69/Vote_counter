@@ -1,10 +1,11 @@
+import csv
 import decimal
 import sys
 
 import pyodbc
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QColor, QFont, QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QFileDialog
 
 from Ui_panel import Ui_MainWindow
 
@@ -54,7 +55,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t2AddButton.clicked.connect(self.t2_add_rec)
         self.t2DelButton.clicked.connect(self.t2_del_rec)
         self.t2ClearButton.clicked.connect(self.t2_clear_users)
-        self.t2RefreshButton.clicked.connect(self.t2_refresh)
+        self.t2LoadButton.clicked.connect(self.t2_refresh)
         self.t3NextButton.clicked.connect(self.t3_next)
         self.t3PrevButton.clicked.connect(self.t3_prev)
         self.t3StopButton.clicked.connect(self.t3_stop)
@@ -150,6 +151,22 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t3_stop()
 
     def t2_refresh(self):
+        fname, _ = QFileDialog.getOpenFileName(self, 'Загрузка', '', 'CSV Files (*.csv);;All Files (*)')
+        data = []
+        try:
+            with open(fname, 'r', encoding='utf-8') as f:
+                csv_reader = csv.reader(f, delimiter=';')
+                data = sorted([(rec[1].strip(), rec[2].strip(), int(rec[0]))
+                               for rec in csv_reader if len(rec) >= 3], key=lambda x: x[0])
+            ret = QMessageBox.question(self, 'Загрузка', f'Загрузить {len(data)} записей в базу?',
+                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes:
+                sql = """INSERT INTO film (name, author, number) VALUES (?, ?, ?)"""
+                with self.con.cursor() as cur:
+                    cur.executemany(sql, data)
+                self.con.commit()
+        except Exception as e:
+            self.statusbar.showMessage('Ошибки загрузки файла..' + str(e))
         self.tabChanged(1)
 
     def t2_clear_users(self):
