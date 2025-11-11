@@ -15,7 +15,7 @@
         <h4>Текущее голосование: {{ number }}</h4>
         <h4>Название работы: {{ film_id }}</h4>
         <h4>Голосует участников: {{ count_users }}</h4>
-    <form method="POST">
+    <form id="autoRefreshForm"  method="POST">
         <p><button class="my-button" type="submit">Обновить!</button></p>
     </form>
       <table class="table">
@@ -33,5 +33,40 @@
         </tbody>
       </table>
 </div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('autoRefreshForm');
+  let timer;
+
+  // Функция сброса таймера
+  function resetTimer() {
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      // alert('Форма обновилась из‑за бездействия!');
+      // form.reset(); // Очищаем все поля формы
+      // Или можно сделать reload страницы:
+      // location.reload();
+      form.submit()
+    }, 5000); // 5000 мс = 5 секунд
+  }
+
+  // Обработчики событий активности
+  const activityEvents = [
+    'mousemove',
+    'keydown',
+    'scroll',
+    'click',
+    'touchstart'
+  ];
+
+  activityEvents.forEach(function(event) {
+    form.addEventListener(event, resetTimer);
+  });
+
+  // Запуск таймера при загрузке
+  resetTimer();
+});
+
+</script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 import sqlite3
+import pyodbc
 import sys
 
 from PyQt6.QtCore import Qt, QTimer
@@ -38,7 +39,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.labelVoting.setPixmap(self.pix_vote)
         self.label_12.setPixmap(self.pix_title)
 
-        self.con = sqlite3.connect('instance/users.db')
+        # self.con = sqlite3.connect('instance/users.db')
+        # Driver=SQL Server;Server=172.16.1.12,1433;Database=Journal4303;UID=sa;PWD=Prestige2011!;
+        self.con = pyodbc.connect(
+            'DRIVER={ODBC Driver 17 for SQL Server};'
+            'SERVER=172.16.1.12,1433;'
+            'DATABASE=voteflow;'
+            'UID=sa;'
+            'PWD=Prestige2011!;'
+            'TrustServerCertificate=yes')
+
         self.tabWidget.currentChanged.connect(self.tabChanged)
         self.tableWidget.itemChanged.connect(self.t2_edit)
         self.t2AddButton.clicked.connect(self.t2_add_rec)
@@ -146,7 +156,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if ret == QMessageBox.StandardButton.Yes:
             cur = self.con.cursor()
-            cur.execute('DELETE FROM user')
+            cur.execute('DELETE FROM users')
             self.con.commit()
             self.update_tab2_users()
 
@@ -199,7 +209,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t3StatTable.clear()
             count_votes = cur.execute("""SELECT film.number, COUNT(vote.id), film.name FROM vote 
                                         LEFT JOIN film on film.id = vote.film
-                                        GROUP BY film.name
+                                        GROUP BY film.name, film.number
                                         ORDER BY film.number DESC""").fetchall()
             self.t3StatTable.setRowCount(len(count_votes))
             self.t3StatTable.setColumnCount(len(count_votes[0]))
@@ -218,7 +228,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             sql = """SELECT COUNT(*) as users, 
                         (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote)) as etaps , 
                         (SELECT COUNT(*) FROM vote) as votes
-                    FROM user"""
+                    FROM users"""
             stats = cur.execute(sql).fetchone()
             self.t3Users.setText(str(stats[0]))
             self.t3Etap.setText(str(stats[1]))
@@ -245,7 +255,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def update_tab2_users(self):
         cur = self.con.cursor()
         try:
-            data = cur.execute('select * from user').fetchall()
+            data = cur.execute('select * from users').fetchall()
             self.t2Users.setText(str(len(data)))
             self.t2Users.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.tableUsers.setRowCount(len(data))
@@ -331,7 +341,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     ROUND(SUM(v.vote) * 1.0 / COUNT(v.id), 2) as result
                 FROM vote v
                 LEFT JOIN film f ON f.id = v.film
-                GROUP BY v.film
+                GROUP BY f.id, f.author, f.name, f.number, v.film
                 ORDER BY result DESC"""
         try:
             data = cur.execute(sql).fetchall()
@@ -355,11 +365,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 best_film_id = data[0][0]
             else:
                 best_film_id = 0
-            sql = f"""SELECT v.user, v.vote, 
-                    ROUND((SELECT SUM(v2.vote) * 1.0 / (COUNT(v2.vote)) FROM vote v2 WHERE v2.user=v.user), 2) as aver
+            sql = f"""SELECT v.users, v.vote, 
+                    ROUND((SELECT SUM(v2.vote) * 1.0 / (COUNT(v2.vote)) FROM vote v2 WHERE v2.users=v.users), 2) as aver
                     FROM vote v
                     WHERE v.film = {best_film_id}
-                    GROUP BY v.user
+                    GROUP BY v.users,v.vote
                     ORDER BY vote DESC, aver"""
             users = cur.execute(sql).fetchall()
             self.t4UsersTable.setRowCount(len(users))
