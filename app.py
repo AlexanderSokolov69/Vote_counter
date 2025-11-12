@@ -1,6 +1,6 @@
 import time
 import pyodbc
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -201,11 +201,12 @@ def updates():
     """SSE endpoint: держит соединение и шлёт обновления при изменении last_change"""
     def generate():
         while True:
-            time.sleep(5)
-            if last_change[0]:
-                last_change[0] = False
-                yield f"data: {old_state[0]}\n\n"
-                print('yeld:', old_state)
+            time.sleep(1)
+            if old_state:
+                number = old_state[0][0]
+            else:
+                number = 0
+            yield f"data: {number}\n\n"
 
     return app.response_class(
         generate(),

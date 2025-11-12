@@ -14,32 +14,42 @@
 
     <div class="user-info">
         {% if old_vote < 0 %}
-            Вы голосуете с адреса: {{ user }}!
+        Вы голосуете с адреса: {{ user }}!
         {% else %}
-            Ваш голос учтен: {{old_vote}} баллов
+        Ваш голос учтен: {{old_vote}} баллов
         {% endif %}
     </div>
 
     <div>
         <table class="table">
             <tbody>
-                <tr><th><div class="vote-number"> Работа №{{number}}</div></th></tr>
-                <tr><td><div class="vote-number">{{film_name}}</div></td></tr>
+            <tr>
+                <th>
+                    <div class="vote-number"> Работа №<div id="number">{{number}}</div></div>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="vote-number">{{film_name}}</div>
+                </td>
+            </tr>
             </tbody>
         </table>
 
         <form id="autoRefreshForm" method="POST">
             <table class="smile_table">
                 <tbody>
-                    <tr>
-                        <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
-                        <th>Оцените работу:</th>
-                        <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
-                    </tr>
+                <tr>
+                    <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/>
+                    </th>
+                    <th>Оцените работу:</th>
+                    <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
+                </tr>
                 </tbody>
             </table>
             <div class="slider-container">
-                <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
+                <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider"
+                       id="volume-slider">
                 <div class="value-popup" id="volume-popup"></div>
             </div>
 
@@ -97,14 +107,14 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('autoRefreshForm');
         let isAnimating = false;
 
         // Обработчик клика по кнопке (ваш код, без таймера)
         const button = document.getElementById('button-heart');
         if (button) {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
                 if (isAnimating) return;
                 isAnimating = true;
@@ -134,25 +144,31 @@
         }
 
         // SSE: слушаем серверные обновления
-        if (!!window.EventSource) {
+        function initEventSource() {
             const eventSource = new EventSource('/updates');
+            const old_number_id = document.getElementById('number')
+            const old_number = old_number_id.innerText;
+            eventSource.onmessage = function (event) {
+                console.log('Обновление:', event.data, old_number);
+                try {
+                    if (event.data != old_number) { // Проверка на значение True
+                        location.reload(); // Обновление страницы
+                    }
+                } catch (e) {
+                    console.error('Ошибка парсинга JSON:', e);
+                }
+            };
 
-        eventSource.onmessage = function(event) {
-            console.log('Обновление:', event.data);
-            location.reload();
-        };
-
-        eventSource.onerror = function(err) {
-            console.error('Ошибка SSE:', err);
-            eventSource.close();
-            setTimeout(() => {
-                eventSource.src = eventSource.src;  // Переподключение
-            }, 2000);
-
-
+            eventSource.onerror = function (err) {
+                console.error('Ошибка SSE:', err);
+                eventSource.close();
+                setTimeout(initEventSource, 3000); // Переподключение
+            };
         }
 
-       } else {
+        if (!!window.EventSource) {
+            initEventSource();
+        } else {
             console.warn('SSE не поддерживается вашим браузером');
         }
     });
