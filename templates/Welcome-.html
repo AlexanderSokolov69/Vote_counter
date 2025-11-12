@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <title>Welcome</title>
+</head>
+<body>
+<div class="main-window">
+<button class="my-button-top" onclick="window.location.href='/stat'">
+    <img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+        </button>
+
+    <div class="user-info">
+    {% if old_vote < 0 %}
+        Вы голосуете с адреса: {{ user }}!
+    {% else %}
+        Ваш голос учтен: {{old_vote}} баллов
+    {% endif %}
+        </div>
+    <div>
+        <table class="table">
+            <tbody>
+        <tr><th><div class="vote-number"> Работа №{{number}}</div></th></tr>
+        <tr><td><div class="vote-number">{{film_name}}</div></td></tr>
+            </tbody>
+        </table>
+
+    <form id="autoRefreshForm" method="POST">
+        <table class="smile_table">
+            <tbody>
+            <tr><th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
+                <th>Оцените работу:</th>
+                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th></tr>
+
+            </tbody>
+        </table>
+        <div class="slider-container">
+            <input name="range"  type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
+            <div class="value-popup" id="volume-popup"></div>
+        </div>
+
+    <div class="btn-container">
+            <button class="my-button" type="submit">
+                <div id="button-heart" class="btn-content">
+                <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                </div>
+            </button>
+    </div>
+    </form>
+    </div>
+    <div class="qrcode-container">
+    <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+    </div>
+    </div>
+<script>
+    // Функция для обновления позиции всплывающего значения
+    function updatePopupPosition(slider, popup) {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const value = parseFloat(slider.value);
+
+        // Вычисляем позицию в процентах
+        const percent = (value - min) / (max - min) * 100;
+
+        // Обновляем позицию всплывающего значения
+        popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
+
+        // Обновляем текст всплывающего значения
+        if (slider.id === 'temp-slider') {
+            popup.textContent = `${value}°C`;
+        } else if (slider.id === 'battery-slider') {
+            popup.textContent = `${value}%`;
+        } else {
+            popup.textContent = value;
+        }
+    }
+
+    // Функция для инициализации ползунка
+    function initSlider(sliderId, popupId, outputId) {
+        const slider = document.getElementById(sliderId);
+        const popup = document.getElementById(popupId);
+        const output = document.getElementById(outputId);
+
+        // Инициализация позиции всплывающего значения
+        updatePopupPosition(slider, popup);
+
+        // Обновление при перемещении ползунка
+        slider.addEventListener('input', function() {
+            // Обновляем всплывающее значение
+            updatePopupPosition(slider, popup);
+        });
+
+        // Показываем всплывающее значение при активации ползунка
+        slider.addEventListener('mousedown', function() {
+            popup.style.opacity = '1';
+        });
+
+        // Скрываем всплывающее значение при отпускании
+        slider.addEventListener('mouseup', function() {
+            popup.style.opacity = '0';
+        });
+
+        // Для touch-устройств
+        slider.addEventListener('touchstart', function() {
+            popup.style.opacity = '1';
+        });
+        slider.addEventListener('touchend', function() {
+            popup.style.opacity = '0';
+        });
+    }
+
+    // Инициализация всех ползунков
+    document.addEventListener('DOMContentLoaded', function() {
+        initSlider('volume-slider', 'volume-popup', 'volume-output');
+    });
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('autoRefreshForm');
+    let timer;
+    let isAnimating = false;
+
+    // Функция сброса таймера (с проверкой анимации)
+    function resetTimer() {
+        clearTimeout(timer);
+        if (!isAnimating) {
+            timer = setTimeout(function() {
+                location.reload();
+            }, 6000); // 6 секунд
+        }
+    }
+
+    // Обработчики активности
+    const activityEvents = ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'];
+    activityEvents.forEach(event => form.addEventListener(event, resetTimer));
+    resetTimer();
+
+const button = document.getElementById('button-heart');
+
+if (button) {
+    // Обработчик клика по кнопке (а не submit)
+    button.addEventListener('click', function(e) {
+        // Блокируем отправку формы, если кликнули по кнопке
+        e.preventDefault();
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤️';
+        heart.classList.add('heart');
+
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left; // Теперь корректно!
+        const y = e.clientY - rect.top;
+
+        console.log(x, y); // Теперь будут числа
+
+        heart.style.left = x + 'px';
+        heart.style.top = y + 'px';
+
+        button.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+            isAnimating = false;
+            form.requestSubmit(); // Отправляем форму после анимации
+        }, 2000);
+        });
+    } else {
+    console.error('Кнопка #button-heart не найдена');
+    }
+});
+</script>
+</body>
+
+</html>

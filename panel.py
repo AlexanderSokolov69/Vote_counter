@@ -6,6 +6,7 @@ import pyodbc
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QFileDialog
+from PyQt6.QtWidgets import QHeaderView, QTableWidget
 
 from Ui_panel import Ui_MainWindow
 
@@ -40,8 +41,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.labelVoting.setPixmap(self.pix_vote)
         self.label_12.setPixmap(self.pix_title)
 
-        # self.con = sqlite3.connect('instance/users.db')
-        # Driver=SQL Server;Server=172.16.1.12,1433;Database=Journal4303;UID=sa;PWD=Prestige2011!;
         self.con = pyodbc.connect(
             'DRIVER={ODBC Driver 17 for SQL Server};'
             'SERVER=172.16.1.12,1433;'
@@ -112,11 +111,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def resizeEvent(self, event):
         width, height = event.size().width(), event.size().height()
-        f_main = int(FONT_MAIN + (width - 1200) * 0.005)
+        f_main = int(FONT_MAIN + (width - 1200) * 0.003)
         f_itog = int(f_main * 1.3)
         self.setFont(QFont('Arial', f_main))
         self.t4ResultTable.setFont(QFont('Arial', f_itog))
         self.t3StatTable.setFont(QFont('Arial', f_itog))
+        # self.t4UsersTable.setFont(QFont('Arial', f_main))
+        # self.t4UsersTable.horizontalHeader().setFont(QFont('Arial', f_main))
         self.tabWidget.currentChanged.emit(self.tabWidget.currentIndex())
         return super().resizeEvent(event)
 
@@ -230,7 +231,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             try:
                 self.t3StatTable.clear()
                 count_votes = converter(cur.execute("""SELECT film.number, COUNT(vote.id), film.name FROM vote 
-                                            LEFT JOIN film on film.id = vote.film
+                                            INNER JOIN film on film.id = vote.film
                                             GROUP BY film.name, film.number
                                             ORDER BY film.number DESC""").fetchall())
             except Exception as e:
@@ -239,17 +240,20 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t3StatTable.setRowCount(len(count_votes))
         self.t3StatTable.setColumnCount(len(count_votes[0]))
         self.t3StatTable.setHorizontalHeaderLabels(['№ этапа', 'Проголосовало', 'Наименование'])
+        self.t3StatTable.verticalHeader().hide()
         voting = False
         for row, rec in enumerate(count_votes):
             for col, item in enumerate(rec):
                 self.t3StatTable.setItem(row, col, item)
                 # if isinstance(item, int):
                 #     self.t3StatTable.item(row, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                if float(rec[0].text()) == float(self.t3LcdCount.value()):
+                if rec[0].text() and float(rec[0].text()) == float(self.t3LcdCount.value()):
                     self.t3StatTable.item(row, col).setBackground(QColor('#ff0000'))
                     voting = True
         self.labelVoting.setVisible(voting)
-        self.t3StatTable.resizeColumnsToContents()
+        self.t3StatTable.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        for col in range(1, self.t3StatTable.columnCount() - 1):
+            self.t3StatTable.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
         sql = """SELECT COUNT(*) as cnt, 
                     (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote) as et) as etaps , 
                     (SELECT COUNT(*) FROM vote) as votes
@@ -288,39 +292,40 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.tableUsers.setRowCount(len(data))
                 self.tableUsers.setColumnCount(len(data[0]))
                 self.tableUsers.setHorizontalHeaderLabels(['Участник'])
+                self.tableUsers.verticalHeader().hide()
                 for row, rec in enumerate(data):
                     for col, item in enumerate(rec):
                         self.tableUsers.setItem(row, col, item)
-                self.tableUsers.resizeColumnsToContents()
+                self.tableUsers.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
             except Exception as e:
                 self.statusBar().showMessage(str(e))
 
     def t2_edit(self, item):
         if self.table_refresh:
             return
-        ret = QMessageBox.question(self, 'Сохранение', 'Сохранить изменение?',
-                                   QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if ret == QMessageBox.StandardButton.Yes:
-            try:
-                id_ = self.tableWidget.item(item.row(), 0).text()
-                sql = """SELECT * FROM film WHERE id=?"""
-                with self.con.cursor() as cur:
-                    data = list(cur.execute(sql, (id_,)).fetchone())
-                # old_field = data[item.column()]
-                data[item.column()] = item.text()
-                numbers = [str(num[0]) for num in cur.execute("SELECT number FROM film").fetchall()]
-                if item.column() != 4 or str(data[3]) not in numbers:
+        if self.current_vote:
+            QMessageBox.about(self, 'Внимание', 'Идёт голосование. Изменения запрещены!')
+        else:
+            ret = QMessageBox.question(self, 'Сохранение', 'Сохранить изменение?',
+                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes:
+                try:
+                    id_ = self.tableWidget.item(item.row(), 0).text()
+                    sql = """SELECT * FROM film WHERE id=?"""
                     with self.con.cursor() as cur:
-                        cur.execute("DELETE FROM film WHERE id=?", (id_,))
-                    sql = "INSERT INTO film VALUES(?, ?, ?, ?)"
-                    with self.con.cursor() as cur:
-                        cur.execute(sql, data)
-                    self.con.commit()
-                else:
-                    self.statusbar.showMessage('Не уникальный номер')
-            except Exception as e:
-                self.statusBar().showMessage(str(e))
-            self.tableWidget.resizeColumnsToContents()
+                        data = list(cur.execute(sql, (id_,)).fetchone())
+                        headers = [desc[0] for desc in cur.description]
+                        header = headers[item.column()]
+                        numbers = [str(num[0]) for num in cur.execute("SELECT number FROM film").fetchall()]
+                    if item.column() != 4 or str(data[3]) not in numbers:
+                        with self.con.cursor() as cur:
+                            cur.execute(f"UPDATE film SET {header}=? WHERE id=?", (item.text(), id_))
+                        self.con.commit()
+                    else:
+                        self.statusbar.showMessage('Не уникальный номер')
+                except Exception as e:
+                    self.statusBar().showMessage(str(e))
+        self.update_tab2()
 
     def t2_del_rec(self):
         ids = set(self.tableWidget.item(item.row(), 0).text() for item in self.tableWidget.selectedItems())
@@ -351,13 +356,18 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t2Count.setText(str(len(result)))
             self.t2Count.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.tableWidget.setHorizontalHeaderLabels(['id', 'Наименование', 'Автор', '№пп'])
+            self.tableWidget.verticalHeader().hide()
             for row, rec in enumerate(result):
                 for col, item in enumerate(rec):
                     self.tableWidget.setItem(row, col, item)
                     # if isinstance(item, int):
                     #     self.tableWidget.item(row, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.tableWidget.hideColumn(0)
-            self.tableWidget.resizeColumnsToContents()
+            # self.tableWidget.resizeColumnsToContents()
+            for col in range(self.tableWidget.columnCount()):
+                self.tableWidget.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
+            self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+
             self.statusbar.showMessage('')
             self.table_refresh = False
         except Exception as e:
@@ -376,9 +386,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 data = converter(cur.execute(sql).fetchall())
             self.t4ResultTable.setRowCount(len(data))
             self.t4ResultTable.setColumnCount(len(data[0]))
-            header = ['id', 'Автор', "Наименование работы", "№ этапа", "Голосов", "Макс.балл",
-                      "Мин.балл", "Сумма", "Средний балл"]
+            header = ['id', 'Автор', "Наименование работы", "Этап", "Голосов", "Макс.",
+                      "Мин.", "Сумма", "Ср.балл"]
             self.t4ResultTable.setHorizontalHeaderLabels(header)
+            self.t4ResultTable.verticalHeader().hide()
             for row, rec in enumerate(data):
                 for col, item in enumerate(rec):
                     self.t4ResultTable.setItem(row, col, item)
@@ -387,9 +398,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     # if isinstance(item, int | float):
                     #     self.t4ResultTable.item(row, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.t4ResultTable.hideColumn(0)
-            self.t4ResultTable.resizeColumnsToContents()
+            # self.t4ResultTable.resizeColumnsToContents()
+
+            for col in range(self.t4ResultTable.columnCount()):
+                self.t4ResultTable.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
+            self.t4ResultTable.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+
             self.statusbar.showMessage('')
-            self.t4UsersTable.clear()
+            # self.t4UsersTable.clear()
             if data:
                 best_film_id = data[0][0].text()
             else:
@@ -407,12 +423,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t4UsersTable.setColumnCount(len(users[0]))
             self.t4UsersTable.setHorizontalHeaderLabels(['Участник', 'Балл', 'Ср.балл'])
             self.t4UsersTable.hideColumn(3)
+            self.t4UsersTable.verticalHeader().hide()
+            self.t4UsersTable.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
             for row, user in enumerate(users):
                 for col, item in enumerate(user):
                     self.t4UsersTable.setItem(row, col, item)
                     if user[3].text() != '0':
                         self.t4UsersTable.item(row, col).setForeground(QColor('red'))
-            self.t4UsersTable.resizeColumnsToContents()
+
+            self.t4UsersTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+            # self.t4UsersTable.resizeColumnsToContents()
             if self.current_vote == 0:
                 self.t4_timer.stop()
         except Exception as e:

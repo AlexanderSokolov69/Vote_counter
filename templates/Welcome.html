@@ -3,72 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <title>Welcome</title>
 </head>
 <body>
 <div class="main-window">
-<a href="/stat">
-<button class="my-button-top"><img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
-        </button>
-    </a>
+    <button class="my-button-top" onclick="window.location.href='/stat'">
+        <img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+    </button>
 
     <div class="user-info">
-    {% if old_vote < 0 %}
-        Вы голосуете с адреса: {{ user }}!
-    {% else %}
-        Ваш голос учтен: {{old_vote}} баллов
-    {% endif %}
-        </div>
+        {% if old_vote < 0 %}
+            Вы голосуете с адреса: {{ user }}!
+        {% else %}
+            Ваш голос учтен: {{old_vote}} баллов
+        {% endif %}
+    </div>
+
     <div>
         <table class="table">
             <tbody>
-        <tr><th><div class="vote-number"> Работа №{{number}}</div></th></tr>
-        <tr><td><div class="vote-number">{{film_name}}</div></td></tr>
+                <tr><th><div class="vote-number"> Работа №{{number}}</div></th></tr>
+                <tr><td><div class="vote-number">{{film_name}}</div></td></tr>
             </tbody>
         </table>
-        </div>
-    <form id="autoRefreshForm" method="POST">
-        <table class="smile_table">
-            <tbody>
-            <tr><th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
-                <th>Оцените работу:</th>
-                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th></tr>
 
-            </tbody>
-        </table>
-        <div class="slider-container">
-            <input name="range"  type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
-            <div class="value-popup" id="volume-popup"></div>
-        </div>
+        <form id="autoRefreshForm" method="POST">
+            <table class="smile_table">
+                <tbody>
+                    <tr>
+                        <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
+                        <th>Оцените работу:</th>
+                        <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="slider-container">
+                <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
+                <div class="value-popup" id="volume-popup"></div>
+            </div>
 
-    <div class="btn-container">
-            <button class="my-button" type="submit">
-                <div class="btn-content">
-                <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
-                </div>
-            </button>
+            <div class="btn-container">
+                <button class="my-button" type="submit">
+                    <div id="button-heart" class="btn-content">
+                        <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                    </div>
+                </button>
+            </div>
+        </form>
     </div>
-    </form>
+
     <div class="qrcode-container">
-    <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+        <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
     </div>
-    </div>
+</div>
+
 <script>
-    // Функция для обновления позиции всплывающего значения
+    // Функция для обновления позиции всплывающего значения (ваш код)
     function updatePopupPosition(slider, popup) {
         const min = parseFloat(slider.min);
         const max = parseFloat(slider.max);
         const value = parseFloat(slider.value);
-
-        // Вычисляем позицию в процентах
         const percent = (value - min) / (max - min) * 100;
-
-        // Обновляем позицию всплывающего значения
         popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
-
-        // Обновляем текст всплывающего значения
         if (slider.id === 'temp-slider') {
             popup.textContent = `${value}°C`;
         } else if (slider.id === 'battery-slider') {
@@ -78,112 +75,85 @@
         }
     }
 
-    // Функция для инициализации ползунка
+    // Инициализация ползунка (ваш код)
     function initSlider(sliderId, popupId, outputId) {
         const slider = document.getElementById(sliderId);
         const popup = document.getElementById(popupId);
         const output = document.getElementById(outputId);
 
-        // Инициализация позиции всплывающего значения
         updatePopupPosition(slider, popup);
 
-        // Обновление при перемещении ползунка
-        slider.addEventListener('input', function() {
-            // Обновляем всплывающее значение
-            updatePopupPosition(slider, popup);
-
-            // Обновляем вывод значения
-            if (sliderId === 'temp-slider') {
-                output.textContent = `${this.value}°C`;
-            } else if (sliderId === 'battery-slider') {
-                output.textContent = `${this.value}%`;
-            } else {
-                output.textContent = this.value;
-            }
-        });
-
-        // Показываем всплывающее значение при активации ползунка
-        slider.addEventListener('mousedown', function() {
-            popup.style.opacity = '1';
-        });
-
-        // Скрываем всплывающее значение при отпускании
-        slider.addEventListener('mouseup', function() {
-            popup.style.opacity = '0';
-        });
-
-        // Для touch-устройств
-        slider.addEventListener('touchstart', function() {
-            popup.style.opacity = '1';
-        });
-        slider.addEventListener('touchend', function() {
-            popup.style.opacity = '0';
-        });
+        slider.addEventListener('input', () => updatePopupPosition(slider, popup));
+        slider.addEventListener('mousedown', () => popup.style.opacity = '1');
+        slider.addEventListener('mouseup', () => popup.style.opacity = '0');
+        slider.addEventListener('touchstart', () => popup.style.opacity = '1');
+        slider.addEventListener('touchend', () => popup.style.opacity = '0');
     }
 
-    // Инициализация всех ползунков
-    document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация ползунков (ваш код)
+    document.addEventListener('DOMContentLoaded', () => {
         initSlider('volume-slider', 'volume-popup', 'volume-output');
     });
-
 </script>
+
 <script>
-const button = document.querySelector('.my-button');
-
-button.addEventListener('click', function(e) {
-    // Создаем сердечко
-    const heart = document.createElement('div');
-    heart.innerHTML = '❤️';
-    heart.classList.add('heart');
-
-    // Позиционируем относительно места клика
-    const rect = button.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    heart.style.left = x + 'px';
-    heart.style.top = y + 'px';
-
-    button.appendChild(heart);
-
-    // Удаляем элемент после анимации
-    setTimeout(() => {
-        heart.remove();
-    }, 1000);
-});
-
     document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('autoRefreshForm');
-  let timer;
+        const form = document.getElementById('autoRefreshForm');
+        let isAnimating = false;
 
-  // Функция сброса таймера
-  function resetTimer() {
-    clearTimeout(timer);
-    timer = setTimeout(function() {
-      // alert('Форма обновилась из‑за бездействия!');
-      // form.reset(); // Очищаем все поля формы
-      // Или можно сделать reload страницы:
-      location.reload();
-    }, 6000); // 6000 мс = 6 секунды
-  }
+        // Обработчик клика по кнопке (ваш код, без таймера)
+        const button = document.getElementById('button-heart');
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isAnimating) return;
+                isAnimating = true;
 
-  // Обработчики событий активности
-  const activityEvents = [
-    'mousemove',
-    'keydown',
-    'scroll',
-    'click',
-    'touchstart'
-  ];
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.classList.add('heart');
 
-  activityEvents.forEach(function(event) {
-    form.addEventListener(event, resetTimer);
-  });
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
 
-  // Запуск таймера при загрузке
-  resetTimer();
-});
-    </script>
+                console.log(x, y);
+                heart.style.left = x + 'px';
+                heart.style.top = y + 'px';
+
+                button.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                    isAnimating = false;
+                    form.requestSubmit();
+                }, 2000);
+            });
+        } else {
+            console.error('Кнопка #button-heart не найдена');
+        }
+
+        // SSE: слушаем серверные обновления
+        if (!!window.EventSource) {
+            const eventSource = new EventSource('/updates');
+
+        eventSource.onmessage = function(event) {
+            console.log('Обновление:', event.data);
+            location.reload();
+        };
+
+        eventSource.onerror = function(err) {
+            console.error('Ошибка SSE:', err);
+            eventSource.close();
+            setTimeout(() => {
+                eventSource.src = eventSource.src;  // Переподключение
+            }, 2000);
+
+
+        } else {
+            console.warn('SSE не поддерживается вашим браузером');
+        }
+    });
+</script>
 </body>
-
 </html>

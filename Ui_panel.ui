@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -180,7 +180,7 @@
              <item row="8" column="0" colspan="2">
               <widget class="QLabel" name="label_9">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -192,13 +192,13 @@
                 </size>
                </property>
                <property name="text">
-                <string/>
+                <string notr="true"/>
                </property>
                <property name="pixmap">
                 <pixmap>static/images/title.png</pixmap>
                </property>
                <property name="scaledContents">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="alignment">
                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -479,7 +479,7 @@
              <property name="maximumSize">
               <size>
                <width>400</width>
-               <height>60</height>
+               <height>45</height>
               </size>
              </property>
              <property name="text">
@@ -487,6 +487,9 @@
              </property>
              <property name="pixmap">
               <pixmap>static/images/vote.png</pixmap>
+             </property>
+             <property name="scaledContents">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -739,10 +742,35 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor" stdset="0">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QTableWidget::item:hover {
+                background-color: #FFE6E6;
+                color: #000000;
+            }
+QTableWidget::item:selected {
+                background-color: #CC0000;
+                color: #FFFFFF;
+            }
+ </string>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_12">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maximumSize">
               <size>
                <width>250</width>
@@ -756,7 +784,7 @@
               <pixmap>static/images/title.png</pixmap>
              </property>
              <property name="scaledContents">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -788,7 +816,7 @@
      <x>0</x>
      <y>0</y>
      <width>1220</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

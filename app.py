@@ -1,3 +1,4 @@
+import time
 import pyodbc
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -6,8 +7,11 @@ import os
 
 from sqlalchemy import text
 from sqlalchemy.exc import NoResultFound
+from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
+last_change = [None]
+old_state = [None]
 
 # Настройка SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -19,6 +23,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 # Driver=SQL Server;Server=172.16.1.12,1433;Database=Journal4303;UID=sa;PWD=Prestige2011!;
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.urandom(24)
+
+app.config['SCHEDULER_API_ENABLED'] = True
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -176,6 +185,37 @@ def auto_register_user():
         # Вход пользователя в систему
         login_user(new_user)
 
+@scheduler.task('interval', id='my_job', seconds=3)
+def my_job():
+    with app.app_context():
+        try:
+            new_state = db.session.execute(text('SELECT * FROM state')).fetchone()
+            if old_state[0] != new_state:
+                old_state[0] = new_state
+                last_change[0] = True
+        except Exception as e:
+            print('error:', str(e))
+
+@app.route('/updates')
+def updates():
+    """SSE endpoint: держит соединение и шлёт обновления при изменении last_change"""
+    def generate():
+        while True:
+            time.sleep(5)
+            if last_change[0]:
+                last_change[0] = False
+                yield f"data: {old_state[0]}\n\n"
+                print('yeld:', old_state)
+
+    return app.response_class(
+        generate(),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*"
+        }
+    )
 
 if __name__ == '__main__':
     host = '0.0.0.0'

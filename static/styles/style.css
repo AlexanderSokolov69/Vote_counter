@@ -46,12 +46,14 @@
     cursor: pointer;
     position: relative;
     transition: all 0.2s ease;
+    box-sizing: border-box;
+    z-index: 1;
 
     /*background: linear-gradient(#6adfb1, #3878e1);*/
     color: red;
     font-family: bold;
     /* Тени для объема */
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(0, 0, 0, 0.3),           /* Внешняя тень */
     -4px -4px 8px rgba(255, 255, 255, 0.2),  /* Светлый блик */
     inset 2px 2px 4px rgba(255, 255, 255, 0.2), /* Внутреннее свечение */
@@ -61,14 +63,14 @@
 /* Эффекты при взаимодействии */
 .my-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     6px 6px 12px rgba(0, 0, 0, 0.4),
     -6px -6px 12px rgba(255, 255, 255, 0.2);
 }
 
 .my-button:active {
   transform: translateY(1px);
-  box-shadow: 
+  box-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.3),
     -2px -2px 4px rgba(255, 255, 255, 0.2),
     inset 3px 3px 6px rgba(0, 0, 0, 0.2);
@@ -496,6 +498,7 @@ h1 {
 .btn-content {
     display: flex;
     align-items: center;
+    position: static;
     gap: 12px;
     color: white;
     font-family: Arial, sans-serif;
@@ -516,7 +519,8 @@ h1 {
     color: #ff2963;
     opacity: 0;
     pointer-events: none;
-    animation: floatUp 1s ease-out forwards;
+    animation: floatUp 2s ease-out forwards;
+    z-index: 1000;
 }
 
 @keyframes floatUp {
@@ -530,6 +534,7 @@ h1 {
     }
     100% {
         opacity: 0;
+        display: none;
         transform: translateY(-80px) scale(1.5);
     }
 }
