@@ -1,27 +1,37 @@
+import os
 import time
 import pyodbc
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
-import os
 
-from sqlalchemy import text
+from sqlalchemy import text, QueuePool
 from sqlalchemy.exc import NoResultFound
 from flask_apscheduler import APScheduler
+
+os.environ['DATABASE_URL'] = """mssql+pyodbc://sa:Prestige2011!@172.16.1.12,1433/voteflow?driver=ODBC+Driver+17+for+SQL+Server"""
 
 app = Flask(__name__)
 last_change = [None]
 old_state = [None]
 
 # Настройка SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mssql+pyodbc://'
-    'sa:Prestige2011!@'
-    '172.16.1.12,1433/voteflow?'
-    'driver=ODBC+Driver+17+for+SQL+Server'
-)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     'mssql+pyodbc://'
+#     'sa:Prestige2011!@'
+#     '172.16.1.12,1433/voteflow?'
+#     'driver=ODBC+Driver+17+for+SQL+Server'
+# )
 # Driver=SQL Server;Server=172.16.1.12,1433;Database=Journal4303;UID=sa;PWD=Prestige2011!;
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'poolclass': QueuePool,
+    'pool_recycle': 600,
+    'pool_pre_ping': True,
+    'pool_size': 10,
+    'max_overflow': 20
+}
 app.secret_key = os.urandom(24)
 
 app.config['SCHEDULER_API_ENABLED'] = True
