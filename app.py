@@ -8,9 +8,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text, QueuePool
 from sqlalchemy.exc import NoResultFound
 
+# os.environ['DATABASE_URL'] = """mssql+pyodbc://sa:Prestige2011!@172.16.1.12,1433/voteflow?driver=ODBC+Driver+17+for+SQL+Server"""
+
 app = Flask(__name__)
 last_change = [None]
-old_state = [None]
+old_state = [[0, 0]]
 
 # Настройка SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -99,11 +101,11 @@ def welcome():
             old_vote = -1
         return render_template('Welcome.html',
                                number=number, user=current_user.id, film_name=film_name[1],
-                               old_vote=old_vote, max_vote=max_vote)
+                               old_vote=old_vote, max_vote=max_vote, state=get_number_state())
     else:
         winners = [user[0] for user in db.session.execute(text(f'SELECT users FROM winners')).all()]
         alert = current_user.id in winners
-        return render_template('Welcome2.html', alert=alert)
+        return render_template('Welcome2.html', alert=alert, state=get_number_state())
 
 
 @app.route('/welcome', methods=['POST'])
@@ -145,7 +147,7 @@ def stat():
         pass
     return render_template('stat.html',
                            count_users=count_users, count_votes=count_votes, film_id=film_id,
-                           number=number)
+                           number=number, state=get_number_state())
 
 
 @app.route('/login')
@@ -197,6 +199,8 @@ def my_job():
         except Exception as e:
             print('error:', str(e))
 
+def get_number_state():
+    return f"{str(old_state[0][0]).strip()}:{str(old_state[0][1]).strip()}"
 
 @app.route('/updates')
 def updates():
@@ -204,11 +208,11 @@ def updates():
 
     def generate():
         while True:
-            time.sleep(1)
+            time.sleep(3)
             if old_state:
-                number = old_state[0][0]
+                number = get_number_state()
             else:
-                number = 0
+                number = "0:0000000000000000"
             yield f"data: {number}\n\n"
 
     return app.response_class(
