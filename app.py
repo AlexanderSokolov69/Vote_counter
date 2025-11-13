@@ -1,15 +1,12 @@
 import os
 import time
-import pyodbc
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_sqlalchemy import SQLAlchemy
 
+from flask import Flask, render_template, request, redirect, url_for
+from flask_apscheduler import APScheduler
+from flask_login import LoginManager, UserMixin, login_user, login_required, current_user
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text, QueuePool
 from sqlalchemy.exc import NoResultFound
-from flask_apscheduler import APScheduler
-
-os.environ['DATABASE_URL'] = """mssql+pyodbc://sa:Prestige2011!@172.16.1.12,1433/voteflow?driver=ODBC+Driver+17+for+SQL+Server"""
 
 app = Flask(__name__)
 last_change = [None]
@@ -17,13 +14,6 @@ old_state = [None]
 
 # Настройка SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = (
-#     'mssql+pyodbc://'
-#     'sa:Prestige2011!@'
-#     '172.16.1.12,1433/voteflow?'
-#     'driver=ODBC+Driver+17+for+SQL+Server'
-# )
-# Driver=SQL Server;Server=172.16.1.12,1433;Database=Journal4303;UID=sa;PWD=Prestige2011!;
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'poolclass': QueuePool,
@@ -103,7 +93,7 @@ def welcome():
             film_name = (0, '_')
             max_vote = 10
         try:
-            sql =f"SELECT vote FROM vote WHERE film={film_name[0]} AND users='{current_user.id.strip()}'"
+            sql = f"SELECT vote FROM vote WHERE film={film_name[0]} AND users='{current_user.id.strip()}'"
             old_vote = db.session.execute(text(sql)).one()[0]
         except NoResultFound:
             old_vote = -1
@@ -195,6 +185,7 @@ def auto_register_user():
         # Вход пользователя в систему
         login_user(new_user)
 
+
 @scheduler.task('interval', id='my_job', seconds=3)
 def my_job():
     with app.app_context():
@@ -206,9 +197,11 @@ def my_job():
         except Exception as e:
             print('error:', str(e))
 
+
 @app.route('/updates')
 def updates():
     """SSE endpoint: держит соединение и шлёт обновления при изменении last_change"""
+
     def generate():
         while True:
             time.sleep(1)
@@ -227,6 +220,7 @@ def updates():
             "Access-Control-Allow-Origin": "*"
         }
     )
+
 
 if __name__ == '__main__':
     host = '0.0.0.0'
