@@ -10,46 +10,11 @@
 <div class="main-window">
     {% block body%}
     {% endblock %}
-    <div id="number_state">{{state}}</div>
+    <div class="user-name">[{{ user }}]</div>
+    <div id="number_state" class="hidden">{{state}}</div>
 </div>
-
-<script>
-    // Функция для обновления позиции всплывающего значения (ваш код)
-    function updatePopupPosition(slider, popup) {
-        const min = parseFloat(slider.min);
-        const max = parseFloat(slider.max);
-        const value = parseFloat(slider.value);
-        const percent = (value - min) / (max - min) * 100;
-        popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
-        if (slider.id === 'temp-slider') {
-            popup.textContent = `${value}°C`;
-        } else if (slider.id === 'battery-slider') {
-            popup.textContent = `${value}%`;
-        } else {
-            popup.textContent = value;
-        }
-    }
-
-    // Инициализация ползунка (ваш код)
-    function initSlider(sliderId, popupId, outputId) {
-        const slider = document.getElementById(sliderId);
-        const popup = document.getElementById(popupId);
-        const output = document.getElementById(outputId);
-
-        updatePopupPosition(slider, popup);
-
-        slider.addEventListener('input', () => updatePopupPosition(slider, popup));
-        slider.addEventListener('mousedown', () => popup.style.opacity = '1');
-        slider.addEventListener('mouseup', () => popup.style.opacity = '0');
-        slider.addEventListener('touchstart', () => popup.style.opacity = '1');
-        slider.addEventListener('touchend', () => popup.style.opacity = '0');
-    }
-
-    // Инициализация ползунков (ваш код)
-    document.addEventListener('DOMContentLoaded', () => {
-        initSlider('volume-slider', 'volume-popup', 'volume-output');
-    });
-</script>
+{% block scripts %}
+{% endblock %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -82,7 +47,7 @@
                     heart.remove();
                     isAnimating = false;
                     form.requestSubmit();
-                }, 1500);
+                }, 1000);
             });
         } else {
             console.error('Кнопка #button-heart не найдена');

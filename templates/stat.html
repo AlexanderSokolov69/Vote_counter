@@ -2,7 +2,7 @@
 
 {% block body %}
 <a href="/">
-<button class="my-button-top"><img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+<button class="my-button-top"><img width="260" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
         </button>
     </a>
         <h4>Текущее голосование: {{ number }}</h4>
@@ -10,7 +10,7 @@
         <h4>Голосует участников: {{ count_users }}</h4>
     <div class="btn-container">
     <form id="autoRefreshForm"  method="POST">
-        <button class="my-button" type="submit">Обновить!</button>
+        <button id="button-heart" class="my-button" type="submit">Обновить!</button>
     </form>
         </div>
       <table class="table">

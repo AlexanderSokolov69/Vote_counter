@@ -1,62 +1,104 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <button class="my-button-top" onclick="window.location.href='/stat'">
-        <img width="300" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
-    </button>
+<button class="my-button-top" onclick="window.location.href='/stat'">
+    <img width="260" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+</button>
 
-    <div class="user-info">
-        {% if old_vote < 0 %}
-        Вы голосуете с адреса: {{ user }}!
-        {% else %}
-        Ваш голос учтен: {{old_vote}} баллов
-        {% endif %}
-    </div>
+<div class="user-info">
+    {% if old_vote < 0 %}
+        НЕ ГОЛОСОВАЛ
+    {% else %}
+        {{old_vote}} баллов
+    {% endif %}
+</div>
 
-    <div>
-        <table class="table">
+<div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>
+                <div class="vote-number">
+                    Работа №{{number}}
+                </div>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div class="vote-number">{{film_name}}</div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <form id="autoRefreshForm" method="POST">
+        <table class="smile_table">
             <tbody>
             <tr>
-                <th>
-                    <div class="vote-number"> Работа №<div id="number">{{number}}</div></div>
+                <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/>
                 </th>
-            </tr>
-            <tr>
-                <td>
-                    <div class="vote-number">{{film_name}}</div>
-                </td>
+                <th>Оцените работу:</th>
+                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
             </tr>
             </tbody>
         </table>
+        <div class="slider-container">
+            <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider"
+                   id="volume-slider">
+            <div class="value-popup" id="volume-popup"></div>
+        </div>
 
-        <form id="autoRefreshForm" method="POST">
-            <table class="smile_table">
-                <tbody>
-                <tr>
-                    <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/>
-                    </th>
-                    <th>Оцените работу:</th>
-                    <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
-                </tr>
-                </tbody>
-            </table>
-            <div class="slider-container">
-                <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider"
-                       id="volume-slider">
-                <div class="value-popup" id="volume-popup"></div>
-            </div>
+        <div class="btn-container">
+            <button class="my-button" type="submit">
+                <div id="button-heart" class="btn-content">
+                    <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                </div>
+            </button>
+        </div>
+    </form>
+</div>
 
-            <div class="btn-container">
-                <button class="my-button" type="submit">
-                    <div id="button-heart" class="btn-content">
-                        <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
-                    </div>
-                </button>
-            </div>
-        </form>
-    </div>
+<div class="qrcode-container">
+    <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+</div>
+{% endblock %}
 
-    <div class="qrcode-container">
-        <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
-    </div>
+{% block scripts %}
+<script>
+    // Функция для обновления позиции всплывающего значения (ваш код)
+    function updatePopupPosition(slider, popup) {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const value = parseFloat(slider.value);
+        const percent = (value - min) / (max - min) * 100;
+        popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
+        if (slider.id === 'temp-slider') {
+            popup.textContent = `${value}°C`;
+        } else if (slider.id === 'battery-slider') {
+            popup.textContent = `${value}%`;
+        } else {
+            popup.textContent = value;
+        }
+    }
+
+    // Инициализация ползунка (ваш код)
+    function initSlider(sliderId, popupId, outputId) {
+        const slider = document.getElementById(sliderId);
+        const popup = document.getElementById(popupId);
+        const output = document.getElementById(outputId);
+
+        updatePopupPosition(slider, popup);
+
+        slider.addEventListener('input', () => updatePopupPosition(slider, popup));
+        slider.addEventListener('mousedown', () => popup.style.opacity = '1');
+        slider.addEventListener('mouseup', () => popup.style.opacity = '0');
+        slider.addEventListener('touchstart', () => popup.style.opacity = '1');
+        slider.addEventListener('touchend', () => popup.style.opacity = '0');
+    }
+
+    // Инициализация ползунков (ваш код)
+    document.addEventListener('DOMContentLoaded', () => {
+        initSlider('volume-slider', 'volume-popup', 'volume-output');
+    });
+</script>
 {% endblock %}

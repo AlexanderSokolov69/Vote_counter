@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -8,7 +9,15 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text, QueuePool
 from sqlalchemy.exc import NoResultFound
 
-# os.environ['DATABASE_URL'] = """mssql+pyodbc://sa:Prestige2011!@172.16.1.12,1433/voteflow?driver=ODBC+Driver+17+for+SQL+Server"""
+os.environ['DATABASE_URL'] = """mssql+pyodbc://sa:Prestige2011!@172.16.1.12,1433/voteflow?driver=ODBC+Driver+17+for+SQL+Server"""
+
+log_file = f"log_{time.strftime("%Y%m%d%H%M%S", time.localtime())}.log"
+logging.basicConfig(
+    level=logging.INFO,  # Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(levelname)s - %(message)s',  # Формат вывода сообщений
+    filename=log_file,  # Файл, куда будут записываться логи (если хотите записывать в файл)
+    filemode='a'  # Режим записи в файл: 'a' - добавление, 'w' - перезапись
+)
 
 app = Flask(__name__)
 last_change = [None]
@@ -105,7 +114,8 @@ def welcome():
     else:
         winners = [user[0] for user in db.session.execute(text(f'SELECT users FROM winners')).all()]
         alert = current_user.id in winners
-        return render_template('Welcome2.html', alert=alert, state=get_number_state())
+        return render_template('Welcome2.html', alert=alert,
+                               user=current_user.id, state=get_number_state())
 
 
 @app.route('/welcome', methods=['POST'])
@@ -147,7 +157,7 @@ def stat():
         pass
     return render_template('stat.html',
                            count_users=count_users, count_votes=count_votes, film_id=film_id,
-                           number=number, state=get_number_state())
+                           number=number, user=current_user.id, state=get_number_state())
 
 
 @app.route('/login')

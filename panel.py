@@ -4,11 +4,11 @@ import sys
 import time
 
 import pyodbc
+import logging
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QColor, QFont, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QFileDialog
 from PyQt6.QtWidgets import QHeaderView, QTableWidget
-from sqlalchemy.exc import NoResultFound
 
 from Ui_panel import Ui_MainWindow
 
@@ -24,10 +24,39 @@ SqlMANY = 1
 SqlONE = 2
 SqlALL = 3
 
+log_file = f"log_{time.strftime("%Y%m%d%H%M%S", time.localtime())}.log"
+logging.basicConfig(
+    level=logging.INFO,  # Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(levelname)s - %(message)s',  # Формат вывода сообщений
+    filename=log_file,  # Файл, куда будут записываться логи (если хотите записывать в файл)
+    filemode='a'  # Режим записи в файл: 'a' - добавление, 'w' - перезапись
+)
+
+
+# class MyQTableWidget(QTableWidget):
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#
+#         style_sheet = """
+#             QTableWidget::item: hover
+#             {
+#                 background - color:  # FFE6E6;
+#                     color:  # 000000;
+#             }
+#             QTableWidget::item: selected
+#             {
+#                 background - color:  # CC0000;
+#                     color:  # FFFFFF;
+#             }
+#         """
+#         self.setStyleSheet(style_sheet)
+#
+
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        logging.info('Программа запущена')
         self.table_refresh = False
 
         screen_w = self.screen().size().width()
@@ -45,7 +74,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.label_17.setPixmap(self.pix_vote_5555)
         self.labelVoting.setPixmap(self.pix_vote)
         self.label_12.setPixmap(self.pix_title)
-
 
         # self.con = pyodbc.connect(
         #     'DRIVER={ODBC Driver 17 for SQL Server};'
@@ -99,13 +127,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             engine = pyodbc.connect(self.conn_string, timeout=120)
             return engine
         except pyodbc.OperationalError as e:
-            print(f"Ошибка подключения к БД: {e}")
+            logging.error(f"get_db_connection(): {e}")
             time.sleep(5)  # Подождать 5 секунд
             return self.get_db_connection()  # Попытка повторного подключения
 
     def db_operate(self, sql, params=None, state=SqlNONE):
+        logging.debug(f"SQL команда: {state} : {sql} : {params}")
+        conn = self.get_db_connection()
         try:
-            conn = self.get_db_connection()
             with conn.cursor() as cur:
                 match state:
                     case 0:
@@ -130,20 +159,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                             ret = cur.execute(sql).fetchall()
             return ret
         except pyodbc.OperationalError as e:
-            print(f" Ошибка выполнения запроса: {e}")
+            logging.error(f"db_operate(): {e}")
         except Exception as e:
-            self.statusbar.showMessage(str(e))
+            logging.error(f'db_operate(): {e}')
         finally:
             conn.close()
-
-    def resource_loader(self):
-        ...
 
     def t1_users_timer(self):
         self.update_tab2_users()
 
     def t1_clear_win(self):
         self.db_operate('DELETE FROM winners')
+        stamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        self.db_operate(f'UPDATE state SET state={stamp}')
         self.tabWidget.currentChanged.emit(0)
 
     def t4_save_users(self):
@@ -154,7 +182,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             ret = QMessageBox.question(self, 'Оповещение', f"Оповестить {len(users)} участников?")
             if ret == QMessageBox.StandardButton.Yes:
                 self.t3StopButton.click()
-                sql = """INSERT INTO winners VALUES (?)"""
+                sql = """INSERT INTO winners
+                         VALUES (?)"""
                 self.db_operate(sql, users, SqlMANY)
                 self.t4UsersTable.clearSelection()
         stamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -168,8 +197,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.setFont(QFont('Arial', f_main))
         self.t4ResultTable.setFont(QFont('Arial', f_itog))
         self.t3StatTable.setFont(QFont('Arial', f_itog))
-        # self.t4UsersTable.setFont(QFont('Arial', f_main))
-        # self.t4UsersTable.horizontalHeader().setFont(QFont('Arial', f_main))
         self.tabWidget.currentChanged.emit(self.tabWidget.currentIndex())
         return super().resizeEvent(event)
 
@@ -185,8 +212,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         else:
             try:
                 self.current_vote = self.vote_numbers[self.vote_numbers.index(self.current_vote) + 1]
-            except IndexError:
+            except IndexError as e:
                 self.statusbar.showMessage('Достигнут конец списка')
+                logging.info(f"t3_next(): {e}")
         self.set_current_vote(self.current_vote)
 
     def t3_prev(self):
@@ -200,24 +228,28 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.current_vote = self.vote_numbers[i - 1]
             self.set_current_vote(self.current_vote)
             self.statusbar.showMessage('')
-        except IndexError:
+        except IndexError as e:
+            logging.info(f"t3_prev(): {e}")
             self.t3_stop()
 
     def t2_refresh(self):
         fname, _ = QFileDialog.getOpenFileName(self, 'Загрузка', '', 'CSV Files (*.csv);;All Files (*)')
         data = []
+        logging.info(f"Попытка загрузки файла: {fname}")
         try:
             with open(fname, 'r', encoding='utf-8') as f:
                 csv_reader = csv.reader(f, delimiter=';')
                 data = sorted([(rec[1].strip(), rec[2].strip(), int(rec[0]))
-                                for rec in csv_reader if len(rec) >= 3], key=lambda x: x[0])
+                               for rec in csv_reader if len(rec) >= 3], key=lambda x: x[0])
             ret = QMessageBox.question(self, 'Загрузка', f'Загрузить {len(data)} записей в базу?',
                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if ret == QMessageBox.StandardButton.Yes:
-                sql = """INSERT INTO film (name, author, number) VALUES (?, ?, ?)"""
+                sql = """INSERT INTO film (name, author, number)
+                         VALUES (?, ?, ?)"""
                 self.db_operate(sql, data, SqlMANY)
         except Exception as e:
-            self.statusbar.showMessage('Ошибки загрузки файла..' + str(e))
+            self.statusbar.showMessage('Ошибки загрузки файла..')
+            logging.error('t2_refresh(): ' + str(e))
             QMessageBox.about(self, 'Ошибка загрузки!' 'Неправильный формат файла.')
         self.tabChanged(1)
 
@@ -268,10 +300,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def t3_stistica(self):
         try:
-            sql = """SELECT film.number, COUNT(vote.id), film.name FROM vote 
-                        INNER JOIN film on film.id = vote.film
-                        GROUP BY film.name, film.number
-                        ORDER BY film.number DESC"""
+            sql = """SELECT film.number, COUNT(vote.id), film.name
+                     FROM vote
+                              INNER JOIN film on film.id = vote.film
+                     GROUP BY film.name, film.number
+                     ORDER BY film.number DESC"""
             count_votes = converter(self.db_operate(sql, state=SqlALL))
             self.t3StatTable.setRowCount(len(count_votes))
             self.t3StatTable.setColumnCount(len(count_votes[0]))
@@ -289,26 +322,28 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t3StatTable.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
             for col in range(1, self.t3StatTable.columnCount() - 1):
                 self.t3StatTable.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
-        except:
+        except Exception as e:
             self.t3StatTable.setRowCount(0)
             self.statusbar.showMessage('Голосов нет.')
+            logging.info(f"t3_stistica(): {e}")
         try:
-            sql = """SELECT COUNT(*) as cnt, 
-                        (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote) as et) as etaps , 
-                        (SELECT COUNT(*) FROM vote) as votes
-                    FROM users"""
+            sql = """SELECT COUNT(*)                                                      as cnt,
+                            (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote) as et) as etaps,
+                            (SELECT COUNT(*) FROM vote)                                   as votes
+                     FROM users"""
             stats = self.db_operate(sql, state=SqlONE)
             self.t3Users.setText(str(stats[0]))
             self.t3Etap.setText(str(stats[1]))
             self.t3Votes.setText(str(stats[2]))
             self.t3Stat.setText(f"{stats[2] / stats[1]:.2f}")
             self.statusbar.showMessage('')
-        except:
+        except Exception as e:
             self.t3Users.setText('---')
             self.t3Etap.setText('---')
             self.t3Votes.setText('---')
             self.t3Stat.setText('---')
             self.statusbar.showMessage('Голосов нет.')
+            logging.info(f"t3_stistica(): {e}")
 
     def prepare_voting(self):
         self.vote_numbers = [rec[0] for rec in
@@ -350,7 +385,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if ret == QMessageBox.StandardButton.Yes:
                 try:
                     id_ = self.tableWidget.item(item.row(), 0).text()
-                    sql = """SELECT * FROM film WHERE id=?"""
+                    sql = """SELECT *
+                             FROM film
+                             WHERE id = ?"""
                     data = list(self.db_operate(sql, state=SqlONE))
                     headers = ['id', 'name', 'author', 'number']
                     header = headers[item.column()]
@@ -361,7 +398,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     else:
                         self.statusbar.showMessage('Не уникальный номер')
                 except Exception as e:
-                    self.statusBar().showMessage(str(e))
+                    logging.error(f"t2_edit(): {e}")
         self.update_tab2()
 
     def t2_del_rec(self):
@@ -406,7 +443,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage('')
             self.table_refresh = False
         except Exception as e:
-            self.statusbar.showMessage(str(e))
+            logging.error('update_tab2: ' + str(e))
 
     def result_contecst(self):
         self.current_winner = self.t4ResultTable.selectedItems()[0].row()
@@ -414,13 +451,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def t4_itog(self):
         try:
-            sql = """SELECT f.id, f.author, f.name, f.number, COUNT(v.id) as votes, 
-                        MAX(v.vote) as max, MIN(v.vote) as min, SUM(v.vote) as summa,
-                        SUM(v.vote) * 1.0 / COUNT(v.id) as result
-                    FROM vote v
-                    LEFT JOIN film f ON f.id = v.film
-                    GROUP BY f.id, f.author, f.name, f.number, v.film
-                    ORDER BY result DESC"""
+            sql = """SELECT f.id,
+                            f.author,
+                            f.name,
+                            f.number,
+                            COUNT(v.id)                     as votes,
+                            MAX(v.vote)                     as max,
+                            MIN(v.vote)                     as min,
+                            SUM(v.vote)                     as summa,
+                            SUM(v.vote) * 1.0 / COUNT(v.id) as result
+                     FROM vote v
+                              LEFT JOIN film f ON f.id = v.film
+                     GROUP BY f.id, f.author, f.name, f.number, v.film
+                     ORDER BY result DESC"""
             data = converter(self.db_operate(sql, state=SqlALL))
             if not data:
                 data = [[]]
@@ -449,9 +492,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             for col in range(self.t4ResultTable.columnCount()):
                 self.t4ResultTable.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
             self.t4ResultTable.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-        except Exception:
+        except Exception as e:
             self.t4ResultTable.setRowCount(0)
             self.statusbar.showMessage('Результатов нет')
+            logging.error('t4_itog(): ' + str(e))
         try:
             best_film_id = data[self.current_winner][0].text()
             sql = f"""SELECT v.users, v.vote, 
@@ -476,9 +520,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.t4UsersTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             if self.current_vote == 0:
                 self.t4_timer.stop()
-        except Exception:
+        except Exception as e:
             self.t4UsersTable.setRowCount(0)
             self.statusBar().showMessage('Итогов нет')
+            logging.error('t4_itog(): ' + str(e))
 
 
 def converter(data):
@@ -496,12 +541,13 @@ def converter(data):
                     result.append(QTableWidgetItem(str(rec)))
                     result[-1].setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             out.append(result)
-    except TypeError:
-        ...
+    except TypeError as e:
+        logging.error('converter(): ' + str(e))
     return out
 
 
 def except_hook(exc_type, exc_value, exc_tb):
+    logging.error(f'exept_hook: {exc_type}, {exc_value}, {exc_tb}')
     sys.__excepthook__(exc_type, exc_value, exc_tb)
 
 

@@ -5,8 +5,9 @@
 .winner {
     color: red;
     font-weight: bold;
-    font-size: 110%;
+    font-size: 150%;
     padding: 20px 0;
+    position: relative;
 }
 
 .vote {
@@ -23,15 +24,11 @@
 }
 
 .main-window {
+    align-content: center;
     text-align: center;
     line-height: 1.5;
     font-family: Arial;
     border: 1px;
-}
-
-.winner {
-    font-size: 150%;
-    color: red;
 }
 
 .my-button {
@@ -148,16 +145,17 @@
     width: 360px;
 }
 
-h3 {
-    color: darkblue;
-}
-
 .user-info {
-    font-size: 150%;
+    text-align: center;
+    font-size: 160%;
     font-weight: bold;
     color: #ff0000;
-    padding: 10px 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+    color: darkblue;
 }
 
 .smile-img {
@@ -249,6 +247,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2px;
+    background: cornsilk;
+
 }
 
 .container {
@@ -519,7 +519,7 @@ h1 {
     color: #ff2963;
     opacity: 0;
     pointer-events: none;
-    animation: floatUp 2s ease-out forwards;
+    animation: floatUp 1s ease-out forwards;
     z-index: 1000;
 }
 
@@ -530,11 +530,20 @@ h1 {
     }
     50% {
         opacity: 1;
-        transform: translateY(-40px) scale(1.2);
+        transform: translateY(-60px) scale(1.2);
     }
     100% {
         opacity: 0;
         display: none;
-        transform: translateY(-80px) scale(1.5);
+        transform: translateY(-120px) scale(1.5);
     }
+}
+
+.hidden {
+    display: none;
+}
+
+.user-name {
+    font-size: 120%;
+    color: #6a11cb;
 }
