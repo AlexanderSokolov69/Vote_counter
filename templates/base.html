@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <title>VoteFlow</title>
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">-->
 </head>
 <body>
 <div class="main-window">
@@ -13,9 +14,29 @@
     <div class="user-name">[{{ user }}]</div>
     <div id="number_state" class="hidden">{{state}}</div>
 </div>
+<!--    <script src="{{ url_for('static', filename='styles/bootstrap.bundle.min.js') }}"></script>-->
 {% block scripts %}
 {% endblock %}
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+  // Находим все смайлики
+  const smiles = document.querySelectorAll('.smile');
+
+  // Для каждого смайлика добавляем обработчик клика
+  smiles.forEach(smile => {
+    smile.addEventListener('click', () => {
+      // Добавляем класс анимации
+      smile.classList.add('jump');
+
+      // Удаляем класс после завершения анимации
+      smile.addEventListener('animationend', () => {
+        smile.classList.remove('jump');
+      });
+    });
+  });
+});
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('autoRefreshForm');
@@ -26,8 +47,8 @@
         if (button) {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (isAnimating) return;
-                isAnimating = true;
+                // if (isAnimating) return;
+                // isAnimating = true;
 
                 const heart = document.createElement('div');
                 heart.innerHTML = '❤️';
@@ -37,7 +58,7 @@
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
 
-                console.log(x, y);
+                // console.log(x, y);
                 heart.style.left = x + 'px';
                 heart.style.top = y + 'px';
 
@@ -45,9 +66,13 @@
 
                 setTimeout(() => {
                     heart.remove();
-                    isAnimating = false;
-                    form.requestSubmit();
-                }, 1000);
+                    // isAnimating = false;
+    // Проверяем, есть ли на форме кнопка submit
+    const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+    if (submitButton) {
+        form.requestSubmit();
+    }
+    }, 1500);
             });
         } else {
             console.error('Кнопка #button-heart не найдена');
@@ -59,7 +84,7 @@
             const old_number_id = document.getElementById('number_state')
             const old_number = old_number_id.innerText;
             eventSource.onmessage = function (event) {
-                console.log('Новое:', event.data, 'Старое', old_number);
+                // console.log('Новое:', event.data, 'Старое', old_number);
                 try {
                     if (event.data != old_number) { // Проверка на значение True
                         location.reload(); // Обновление страницы

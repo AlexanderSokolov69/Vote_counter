@@ -162,71 +162,6 @@ h3 {
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-input[type="range"] {
-    -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
-    appearance: none; /* Убираем стандартный стиль для других браузеров */
-    width: 300px; /* Укажите нужную ширину */
-    background: transparent; /* Отключаем фоновый цвет */
-}
-
-/* Стили для WebKit (Chrome, Safari) */
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-}
-
-/* Стили для Mozilla (Firefox) */
-input[type="range"]::-moz-range-thumb {
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-moz-range-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-}
-
-/* Стили для Edge и IE */
-input[type="range"]::-ms-thumb {
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-ms-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-    border: none; /* Убираем рамки */
-}
-
-input[type="range"]::-ms-fill-lower {
-    background: #aaf; /* Цвет нижней части трека */
-    border-radius: 15px; /* Закругленные края для нижней части */
-}
-
-input[type="range"]::-ms-fill-upper {
-    background: #aaf; /* Цвет верхней части трека */
-    border-radius: 15px; /* Закругленные края для верхней части */
-}
-
 /* ==================================================== */
 
 * {
@@ -507,6 +442,11 @@ h1 {
     z-index: 2;
 }
 
+.btn-content img {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+}
 .btn-icon {
     width: 30px;
     height: 30px;
@@ -546,4 +486,125 @@ h1 {
 .user-name {
     font-size: 120%;
     color: #6a11cb;
+}
+
+/* ================================
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    outline: none;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+ ============================================= */
+
+input[type="range"] {
+    -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
+    appearance: none; /* Убираем стандартный стиль для других браузеров */
+    width: 300px; /* Укажите нужную ширину */
+    background: transparent; /* Отключаем фоновый цвет */
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Стили для WebKit (Chrome, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+}
+
+/* Стили для Mozilla (Firefox) */
+input[type="range"]::-moz-range-thumb {
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-moz-range-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+}
+
+/* Стили для Edge и IE */
+input[type="range"]::-ms-thumb {
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-ms-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+    border: none; /* Убираем рамки */
+}
+
+input[type="range"]::-ms-fill-lower {
+    background: #aaf; /* Цвет нижней части трека */
+    border-radius: 15px; /* Закругленные края для нижней части */
+}
+
+input[type="range"]::-ms-fill-upper {
+    background: #aaf; /* Цвет верхней части трека */
+    border-radius: 15px; /* Закругленные края для верхней части */
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+    transform: scale(1.1);
+    background: #45a049;
+}
+
+/* smile animation */
+.smile {
+  display: inline-block;
+  font-size: 40px;
+  margin: 10px;
+  cursor: pointer;
+  wigth: 40px;
+  transition: transform 0.3s ease;
+}
+
+/* Анимация подпрыгивания */
+@keyframes jump {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+.smile.jump {
+  animation: jump 0.4s ease;
 }

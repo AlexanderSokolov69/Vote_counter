@@ -35,10 +35,15 @@
         <table class="smile_table">
             <tbody>
             <tr>
-                <th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/>
+                <th>
+                    <img class="smile" width="80" src="{{ url_for('static', filename='images/smile_not_like.png') }}"
+                        alt="Не нравится" onclick="setSliderMin()">
                 </th>
                 <th>Оцените работу:</th>
-                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th>
+                <th>
+                    <img class="smile" width="80" src="{{ url_for('static', filename='images/smile_like.png') }}"
+                        alt="Нравится" onclick="setSliderMax()">
+                </th>
             </tr>
             </tbody>
         </table>
@@ -51,7 +56,7 @@
         <div class="btn-container">
             <button class="my-button" type="submit">
                 <div id="button-heart" class="btn-content">
-                    <img width="280" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                    <img src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
                 </div>
             </button>
         </div>
@@ -64,6 +69,19 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    function setSliderMin() {
+    const slider = document.getElementById('volume-slider');
+    slider.value = slider.min;  // Устанавливаем минимальное значение
+    updatePopupPosition(slider, document.getElementById('volume-popup'));
+}
+
+function setSliderMax() {
+    const slider = document.getElementById('volume-slider');
+    slider.value = slider.max;  // Устанавливаем максимальное значение
+    updatePopupPosition(slider, document.getElementById('volume-popup'));
+}
+</script>
 <script>
     // Функция для обновления позиции всплывающего значения (ваш код)
     function updatePopupPosition(slider, popup) {
