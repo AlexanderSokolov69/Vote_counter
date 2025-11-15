@@ -24,7 +24,7 @@ SqlMANY = 1
 SqlONE = 2
 SqlALL = 3
 
-log_file = f"log_{time.strftime("%Y%m%d%H%M%S", time.localtime())}.log"
+log_file = f"panel_log_{time.strftime("%Y%m%d%H%M%S", time.localtime())}.log"
 logging.basicConfig(
     level=logging.INFO,  # Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(levelname)s - %(message)s',  # Формат вывода сообщений
@@ -388,14 +388,15 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     sql = """SELECT *
                              FROM film
                              WHERE id = ?"""
-                    data = list(self.db_operate(sql, state=SqlONE))
+                    data = list(self.db_operate(sql, params=(id_,), state=SqlONE))
                     headers = ['id', 'name', 'author', 'number']
                     header = headers[item.column()]
                     sql_numbers = self.db_operate("SELECT number FROM film", state=SqlALL)
-                    numbers = [str(num[0]) for num in sql_numbers]
-                    if item.column() != 4 or str(data[3]) not in numbers:
+                    numbers = [num[0] for num in sql_numbers]
+                    if item.column() != 3 or int(item.text()) not in numbers:
                         self.db_operate(f"UPDATE film SET {header}=? WHERE id=?", params=(item.text(), id_))
                     else:
+                        QMessageBox.about(self, 'Внимание!', 'Не уникальный номер!')
                         self.statusbar.showMessage('Не уникальный номер')
                 except Exception as e:
                     logging.error(f"t2_edit(): {e}")

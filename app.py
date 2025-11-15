@@ -18,6 +18,7 @@ logging.basicConfig(
     filename=log_file,  # Файл, куда будут записываться логи (если хотите записывать в файл)
     filemode='a'  # Режим записи в файл: 'a' - добавление, 'w' - перезапись
 )
+logging.getLogger('apscheduler').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 last_change = [None]
@@ -207,7 +208,7 @@ def my_job():
                 old_state[0] = new_state
                 last_change[0] = True
         except Exception as e:
-            print('error:', str(e))
+            logging.error(f'my_job: {e}')
 
 def get_number_state():
     return f"{str(old_state[0][0]).strip()}:{str(old_state[0][1]).strip()}"
@@ -239,4 +240,4 @@ def updates():
 if __name__ == '__main__':
     host = '0.0.0.0'
     port = 5555
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port, debug=False)
