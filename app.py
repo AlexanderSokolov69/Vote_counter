@@ -132,7 +132,8 @@ def welcome2():
         db.session.commit()
         return redirect(url_for('welcome'))
 
-    except Exception:
+    except Exception as e:
+        logging.error(f"Error in welcome2: {e}")
         return redirect(url_for('stat'))
 
 
