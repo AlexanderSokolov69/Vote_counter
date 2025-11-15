@@ -585,7 +585,7 @@ input[type="range"]::-ms-fill-upper {
 
 input[type="range"]:hover::-webkit-slider-thumb {
     transform: scale(1.1);
-    background: #45a049;
+    background: #00ff00;
 }
 
 /* smile animation */
@@ -601,7 +601,8 @@ input[type="range"]:hover::-webkit-slider-thumb {
 /* Анимация подпрыгивания */
 @keyframes jump {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  20% { transform: translateY(5px); }
+  40% { transform: translateY(25px); }
   100% { transform: translateY(0); }
 }
 
