@@ -1,30 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-    <title>Welcome</title>
-</head>
-<body>
-<div class="main-window">
-    <h1>
-        {% if alert %}
-    <div class="winner">!!! ПОЛУЧИ ПРИЗ !!!</div>
-     {% else %}
-    Голосование не началось...
-    {% endif %}
-    </h1>
-    <h1>
-    <form method="GET">
-<button class="my-button" type="submit"><img width="340" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
-        </button>
-    </form>
-        </h1>
-        <div>
-    <img width="280" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
-    </div>
+{% extends "base.html" %}
 
-</div>
-</body>
-</html>
+{% block body %}
+<form id="autoRefreshForm" method="GET">
+    <div id="button-heart">
+            <button class="my-button-top"
+                    type="refresh"><img width="260"
+                                       src="{{ url_for('static', filename='images/title.png') }}"
+                                       alt=""/>
+            </button>
+        </form>
+        {% if alert %}
+        <div class="winner">!!! ПОЛУЧИ ПРИЗ !!!</div>
+        {% else %}
+        <div class="vote">Голосование не началось...</div>
+        {% endif %}
+
+        <div class="winner">
+            {% if alert %}
+            <img class="smile" width="200" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/>
+            {% else %}
+            <img class="smile" width="280" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+{% endblock %}

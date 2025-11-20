@@ -5,13 +5,30 @@
 .winner {
     color: red;
     font-weight: bold;
-    font-size: 110%;
+    font-size: 150%;
+    padding: 20px 0;
+    position: relative;
+}
+
+.vote {
+    color: darkgreen;
+    font-weight: bold;
+    font-size: 40px;
+    padding: 40px 0;
+}
+
+.vote-number {
+    font-size: 120%;
+    color: #12437e;
+    font-weight: bold;
 }
 
 .main-window {
+    align-content: center;
     text-align: center;
     line-height: 1.5;
     font-family: Arial;
+    border: 1px;
 }
 
 .my-button {
@@ -26,12 +43,14 @@
     cursor: pointer;
     position: relative;
     transition: all 0.2s ease;
+    box-sizing: border-box;
+    z-index: 1;
 
-    background: linear-gradient(145 deg, #6ee7b7, #3b82f6);
+    /*background: linear-gradient(#6adfb1, #3878e1);*/
     color: red;
     font-family: bold;
     /* Тени для объема */
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(0, 0, 0, 0.3),           /* Внешняя тень */
     -4px -4px 8px rgba(255, 255, 255, 0.2),  /* Светлый блик */
     inset 2px 2px 4px rgba(255, 255, 255, 0.2), /* Внутреннее свечение */
@@ -41,14 +60,54 @@
 /* Эффекты при взаимодействии */
 .my-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     6px 6px 12px rgba(0, 0, 0, 0.4),
     -6px -6px 12px rgba(255, 255, 255, 0.2);
 }
 
 .my-button:active {
   transform: translateY(1px);
-  box-shadow: 
+  box-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    -2px -2px 4px rgba(255, 255, 255, 0.2),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.my-button-top {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 12px 24px;
+    margin-top: 5px;
+    font-size: 150%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+
+    background: linear-gradient(#6adfb1, #3878e1);
+    color: white;
+    font-family: bold;
+    /* Тени для объема */
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.3),           /* Внешняя тень */
+    -4px -4px 8px rgba(255, 255, 255, 0.2),  /* Светлый блик */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2), /* Внутреннее свечение */
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2);  /* Внутренняя тень */
+}
+
+/* Эффекты при взаимодействии */
+.my-button-top:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    6px 6px 12px rgba(0, 0, 0, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.2);
+}
+
+.my-button-top:active {
+  transform: translateY(1px);
+  box-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.3),
     -2px -2px 4px rgba(255, 255, 255, 0.2),
     inset 3px 3px 6px rgba(0, 0, 0, 0.2);
@@ -63,9 +122,9 @@
 
 .table td, .table th {
     border: 1px solid var(--color-border-dark);
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .table {
@@ -74,7 +133,7 @@
     border: 1px solid var(--color-border-dark);
     border-collapse: collapse;
     margin: 0 auto;
-    width: 340px;
+    width: 300px;
 }
 
 .smile_table {
@@ -86,79 +145,21 @@
     width: 360px;
 }
 
+.user-info {
+    text-align: center;
+    font-size: 160%;
+    font-weight: bold;
+    color: #ff0000;
+    padding: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
 h3 {
     color: darkblue;
 }
 
-.user-info {
-    font-size: 150%;
-    font-weight: bold;
-    color: brown;
-}
-
-input[type="range"] {
-    -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
-    appearance: none; /* Убираем стандартный стиль для других браузеров */
-    width: 300px; /* Укажите нужную ширину */
-    background: transparent; /* Отключаем фоновый цвет */
-}
-
-/* Стили для WebKit (Chrome, Safari) */
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-}
-
-/* Стили для Mozilla (Firefox) */
-input[type="range"]::-moz-range-thumb {
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-moz-range-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-}
-
-/* Стили для Edge и IE */
-input[type="range"]::-ms-thumb {
-    width: 30px; /* Ширина ползунка */
-    height: 30px; /* Высота ползунка */
-    background: red; /* Цвет ползунка */
-    cursor: pointer;
-    border-radius: 30%; /* Закругленные края ползунка */
-}
-
-input[type="range"]::-ms-track {
-    height: 30px; /* Высота трека ползунка */
-    background: #aaf; /* Цвет трека */
-    border-radius: 15px; /* Закругленные края трека */
-    border: none; /* Убираем рамки */
-}
-
-input[type="range"]::-ms-fill-lower {
-    background: #aaf; /* Цвет нижней части трека */
-    border-radius: 15px; /* Закругленные края для нижней части */
-}
-
-input[type="range"]::-ms-fill-upper {
-    background: #aaf; /* Цвет верхней части трека */
-    border-radius: 15px; /* Закругленные края для верхней части */
+.smile-img {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 /* ==================================================== */
@@ -181,6 +182,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2px;
+    background: cornsilk;
+
 }
 
 .container {
@@ -210,7 +213,7 @@ h1 {
 .slider-container {
     position: relative;
     margin: 0px 0;
-    padding: 20px;
+    padding: 2px;
 }
 
 .slider-label {
@@ -319,7 +322,7 @@ h1 {
 /* Стили для всплывающего значения */
 .value-popup {
     position: absolute;
-    top: -45px;
+    top: -60px;
     left: 50%;
     transform: translateX(-50%);
     background: #3498db;
@@ -386,16 +389,16 @@ h1 {
 
 .qrcode-container {
     position: relative;
-    margin: 20px 0;
-    padding: 20px;
-
+    margin: 10px 0;
+}
 /* ==================================================== */
 .btn-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: #f0f0f0;
+    padding: 20px;
+    /*height: 100vh;*/
+    /*background: #f0f0f0;*/
 
 }
 
@@ -430,6 +433,7 @@ h1 {
 .btn-content {
     display: flex;
     align-items: center;
+    position: static;
     gap: 12px;
     color: white;
     font-family: Arial, sans-serif;
@@ -438,6 +442,11 @@ h1 {
     z-index: 2;
 }
 
+.btn-content img {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+}
 .btn-icon {
     width: 30px;
     height: 30px;
@@ -446,11 +455,12 @@ h1 {
 
 .heart {
     position: absolute;
-    font-size: 14px;
+    font-size: 40px;
     color: #ff2963;
     opacity: 0;
     pointer-events: none;
     animation: floatUp 1s ease-out forwards;
+    z-index: 1000;
 }
 
 @keyframes floatUp {
@@ -460,10 +470,142 @@ h1 {
     }
     50% {
         opacity: 1;
-        transform: translateY(-40px) scale(1.2);
+        transform: translateY(-60px) scale(1.2);
     }
     100% {
         opacity: 0;
-        transform: translateY(-80px) scale(1.5);
+        display: none;
+        transform: translateY(-120px) scale(1.5);
     }
+}
+
+.hidden {
+    display: none;
+}
+
+.user-name {
+    font-size: 120%;
+    color: #6a11cb;
+}
+
+/* ================================
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    outline: none;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #4CAF50;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+ ============================================= */
+
+input[type="range"] {
+    -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
+    appearance: none; /* Убираем стандартный стиль для других браузеров */
+    width: 300px; /* Укажите нужную ширину */
+    background: transparent; /* Отключаем фоновый цвет */
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Стили для WebKit (Chrome, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+}
+
+/* Стили для Mozilla (Firefox) */
+input[type="range"]::-moz-range-thumb {
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-moz-range-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+}
+
+/* Стили для Edge и IE */
+input[type="range"]::-ms-thumb {
+    width: 30px; /* Ширина ползунка */
+    height: 30px; /* Высота ползунка */
+    background: red; /* Цвет ползунка */
+    cursor: pointer;
+    border-radius: 30%; /* Закругленные края ползунка */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+input[type="range"]::-ms-track {
+    height: 30px; /* Высота трека ползунка */
+    background: #aaf; /* Цвет трека */
+    border-radius: 15px; /* Закругленные края трека */
+    border: none; /* Убираем рамки */
+}
+
+input[type="range"]::-ms-fill-lower {
+    background: #aaf; /* Цвет нижней части трека */
+    border-radius: 15px; /* Закругленные края для нижней части */
+}
+
+input[type="range"]::-ms-fill-upper {
+    background: #aaf; /* Цвет верхней части трека */
+    border-radius: 15px; /* Закругленные края для верхней части */
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+    transform: scale(1.1);
+    background: #00ff00;
+}
+
+/* smile animation */
+.smile {
+  display: inline-block;
+  font-size: 40px;
+  margin: 10px;
+  cursor: pointer;
+  wigth: 40px;
+  transition: transform 0.3s ease;
+}
+
+/* Анимация подпрыгивания */
+@keyframes jump {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(5px); }
+  40% { transform: translateY(25px); }
+  100% { transform: translateY(0); }
+}
+
+.smile.jump {
+  animation: jump 0.4s ease;
 }

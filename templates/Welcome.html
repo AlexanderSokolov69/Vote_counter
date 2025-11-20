@@ -1,74 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-    <title>Welcome</title>
-</head>
-<body>
-<div class="main-window">
-<a href="/stat">
-<button><img width="340" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
-        </button>
-    </a>
-    <h2>Позиция № {{number}}</h2>
-    <div class="user-info">
+{% extends "base.html" %}
+
+{% block body %}
+<button class="my-button-top" onclick="window.location.href='/stat'">
+    <img width="260" src="{{ url_for('static', filename='images/title.png') }}" alt=""/>
+</button>
+
+<div class="user-info">
     {% if old_vote < 0 %}
-        Вы голосуете с адреса: {{ user }}!
+        НЕ ГОЛОСОВАЛ
     {% else %}
-        Ваш голос учтен: {{old_vote}} баллов
+        {{old_vote}} баллов
     {% endif %}
-        </div>
-    <div>
-        <table class="table">
-            <tbody>
-        <tr><th>Название работы:</th></tr>
-        <tr><td>{{film_name}}</td></tr>
-            </tbody>
-        </table>
-        </div>
-    <form method="POST">
+</div>
+
+<div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>
+                <div class="vote-number">
+                    Работа №{{number}}
+                </div>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div class="vote-number">{{film_name}}</div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <form id="autoRefreshForm" method="POST">
         <table class="smile_table">
             <tbody>
-            <tr><th><img width="60" src="{{ url_for('static', filename='images/smile_not_like.png') }}" alt=""/></th>
+            <tr>
+                <th>
+                    <img class="smile" width="80" src="{{ url_for('static', filename='images/smile_not_like.png') }}"
+                        alt="Не нравится" onclick="setSliderMin()">
+                </th>
                 <th>Оцените работу:</th>
-                <th><img width="60" src="{{ url_for('static', filename='images/smile_like.png') }}" alt=""/></th></tr>
-
+                <th>
+                    <img class="smile" width="80" src="{{ url_for('static', filename='images/smile_like.png') }}"
+                        alt="Нравится" onclick="setSliderMax()">
+                </th>
+            </tr>
             </tbody>
         </table>
         <div class="slider-container">
-            <input name="range"  type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider" id="volume-slider">
+            <input name="range" type="range" min="0" max="{{max_vote}}" value="{{old_vote}}" class="range-slider"
+                   id="volume-slider">
             <div class="value-popup" id="volume-popup"></div>
         </div>
 
-    <div class="btn-container">
+        <div class="btn-container">
             <button class="my-button" type="submit">
-                <div class="btn-content">
-                <img width="320" src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
+                <div id="button-heart" class="btn-content">
+                    <img src="{{ url_for('static', filename='images/vote.png') }}" alt=""/>
                 </div>
             </button>
-    </div>
+        </div>
     </form>
-    <div class="qrcode-container">
-    <img width="180" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
-    </div>
-    </div>
+</div>
+
+<div class="qrcode-container">
+    <img width="150" src="{{ url_for('static', filename='images/voteflow-5555.png') }}" alt=""/>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
-    // Функция для обновления позиции всплывающего значения
+    function setSliderMin() {
+    const slider = document.getElementById('volume-slider');
+    slider.value = slider.min;  // Устанавливаем минимальное значение
+    updatePopupPosition(slider, document.getElementById('volume-popup'));
+}
+
+function setSliderMax() {
+    const slider = document.getElementById('volume-slider');
+    slider.value = slider.max;  // Устанавливаем максимальное значение
+    updatePopupPosition(slider, document.getElementById('volume-popup'));
+}
+</script>
+<script>
+    // Функция для обновления позиции всплывающего значения (ваш код)
     function updatePopupPosition(slider, popup) {
         const min = parseFloat(slider.min);
         const max = parseFloat(slider.max);
         const value = parseFloat(slider.value);
-
-        // Вычисляем позицию в процентах
         const percent = (value - min) / (max - min) * 100;
-
-        // Обновляем позицию всплывающего значения
         popup.style.left = `calc(${percent}% + (${20 - percent * 0.4}px))`;
-
-        // Обновляем текст всплывающего значения
         if (slider.id === 'temp-slider') {
             popup.textContent = `${value}°C`;
         } else if (slider.id === 'battery-slider') {
@@ -78,81 +99,24 @@
         }
     }
 
-    // Функция для инициализации ползунка
+    // Инициализация ползунка (ваш код)
     function initSlider(sliderId, popupId, outputId) {
         const slider = document.getElementById(sliderId);
         const popup = document.getElementById(popupId);
         const output = document.getElementById(outputId);
 
-        // Инициализация позиции всплывающего значения
         updatePopupPosition(slider, popup);
 
-        // Обновление при перемещении ползунка
-        slider.addEventListener('input', function() {
-            // Обновляем всплывающее значение
-            updatePopupPosition(slider, popup);
-
-            // Обновляем вывод значения
-            if (sliderId === 'temp-slider') {
-                output.textContent = `${this.value}°C`;
-            } else if (sliderId === 'battery-slider') {
-                output.textContent = `${this.value}%`;
-            } else {
-                output.textContent = this.value;
-            }
-        });
-
-        // Показываем всплывающее значение при активации ползунка
-        slider.addEventListener('mousedown', function() {
-            popup.style.opacity = '1';
-        });
-
-        // Скрываем всплывающее значение при отпускании
-        slider.addEventListener('mouseup', function() {
-            popup.style.opacity = '0';
-        });
-
-        // Для touch-устройств
-        slider.addEventListener('touchstart', function() {
-            popup.style.opacity = '1';
-        });
-        slider.addEventListener('touchend', function() {
-            popup.style.opacity = '0';
-        });
+        slider.addEventListener('input', () => updatePopupPosition(slider, popup));
+        slider.addEventListener('mousedown', () => popup.style.opacity = '1');
+        slider.addEventListener('mouseup', () => popup.style.opacity = '0');
+        slider.addEventListener('touchstart', () => popup.style.opacity = '1');
+        slider.addEventListener('touchend', () => popup.style.opacity = '0');
     }
 
-    // Инициализация всех ползунков
-    document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация ползунков (ваш код)
+    document.addEventListener('DOMContentLoaded', () => {
         initSlider('volume-slider', 'volume-popup', 'volume-output');
     });
-
 </script>
-<script>
-       const button = document.querySelector('.my-button');
-
-        button.addEventListener('click', function(e) {
-            // Создаем сердечко
-            const heart = document.createElement('div');
-            heart.innerHTML = '❤️';
-            heart.classList.add('heart');
-
-            // Позиционируем относительно места клика
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
-
-            button.appendChild(heart);
-
-            // Удаляем элемент после анимации
-            setTimeout(() => {
-                heart.remove();
-            }, 1000);
-        });
-
-    </script>
-</body>
-
-</html>
+{% endblock %}
