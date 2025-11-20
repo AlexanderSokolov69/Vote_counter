@@ -75,13 +75,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.labelVoting.setPixmap(self.pix_vote)
         self.label_12.setPixmap(self.pix_title)
 
-        # self.con = pyodbc.connect(
-        #     'DRIVER={ODBC Driver 17 for SQL Server};'
-        #     'SERVER=172.16.1.12,1433;'
-        #     'DATABASE=voteflow;'
-        #     'UID=sa;'
-        #     'PWD=Prestige2011!;'
-        #     'TrustServerCertificate=yes')
         self.conn_string = """DRIVER={ODBC Driver 17 for SQL Server};
                         SERVER=172.16.1.12,1433;
                         DATABASE=voteflow;
@@ -134,6 +127,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def db_operate(self, sql, params=None, state=SqlNONE):
         logging.debug(f"SQL команда: {state} : {sql} : {params}")
         conn = self.get_db_connection()
+        ret = []
         try:
             with conn.cursor() as cur:
                 match state:
@@ -266,14 +260,18 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t4_timer.stop()
         match a0:
             case 0:
+                logging.info("<<Настройки>>")
                 self.t1_prepare()
                 self.t1_timer.start(TIMER_TIK * 2)
             case 1:
+                logging.info("<<Список голосования>>")
                 self.update_tab2()
             case 2:
+                logging.info("<<Ход голосования>>")
                 self.prepare_voting()
                 self.t3_timer.start(TIMER_TIK)
             case 3:
+                logging.info("<<Итоги>>")
                 self.current_winner = 0
                 self.t4_timer.start(TIMER_TIK * 3)
 
@@ -300,14 +298,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def t3_stistica(self):
         try:
+            count_votes = []
             sql = """SELECT film.number, COUNT(vote.id), film.name
                      FROM vote
                               INNER JOIN film on film.id = vote.film
                      GROUP BY film.name, film.number
                      ORDER BY film.number DESC"""
             count_votes = converter(self.db_operate(sql, state=SqlALL))
-            self.t3StatTable.setRowCount(len(count_votes))
-            self.t3StatTable.setColumnCount(len(count_votes[0]))
+            if count_votes:
+                self.t3StatTable.setRowCount(len(count_votes))
+                self.t3StatTable.setColumnCount(len(count_votes[0]))
+            else:
+                self.t3StatTable.setRowCount(0)
+                self.t3StatTable.setColumnCount(0)
             self.t3StatTable.setHorizontalHeaderLabels(['№ этапа', 'Проголосовало', 'Наименование'])
             self.t3StatTable.verticalHeader().hide()
             self.t3StatTable.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -325,25 +328,28 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             self.t3StatTable.setRowCount(0)
             self.statusbar.showMessage('Голосов нет.')
-            logging.info(f"t3_stistica(): {e}")
-        try:
+            logging.info(f"t3_stistica(1): {e}")
+
             sql = """SELECT COUNT(*)                                                      as cnt,
                             (SELECT COUNT(*) FROM (SELECT DISTINCT film FROM vote) as et) as etaps,
                             (SELECT COUNT(*) FROM vote)                                   as votes
                      FROM users"""
             stats = self.db_operate(sql, state=SqlONE)
-            self.t3Users.setText(str(stats[0]))
-            self.t3Etap.setText(str(stats[1]))
-            self.t3Votes.setText(str(stats[2]))
-            self.t3Stat.setText(f"{stats[2] / stats[1]:.2f}")
-            self.statusbar.showMessage('')
-        except Exception as e:
-            self.t3Users.setText('---')
-            self.t3Etap.setText('---')
-            self.t3Votes.setText('---')
-            self.t3Stat.setText('---')
-            self.statusbar.showMessage('Голосов нет.')
-            logging.info(f"t3_stistica(): {e}")
+            if stats:
+                try:
+                    self.t3Users.setText(str(stats[0]))
+                    self.t3Etap.setText(str(stats[1]))
+                    self.t3Votes.setText(str(stats[2]))
+                    self.t3Stat.setText(f"{stats[2] / stats[1]:.2f}")
+                except ZeroDivisionError as e:
+                    self.t3Stat.setText("0")
+                self.statusbar.showMessage('')
+            else:
+                self.t3Users.setText('---')
+                self.t3Etap.setText('---')
+                self.t3Votes.setText('---')
+                self.t3Stat.setText('---')
+                self.statusbar.showMessage('Голосов нет.')
 
     def prepare_voting(self):
         self.vote_numbers = [rec[0] for rec in
@@ -451,6 +457,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t4_itog()
 
     def t4_itog(self):
+        data = []
         try:
             sql = """SELECT f.id,
                             f.author,
@@ -466,10 +473,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                      GROUP BY f.id, f.author, f.name, f.number, v.film
                      ORDER BY result DESC"""
             data = converter(self.db_operate(sql, state=SqlALL))
-            if not data:
-                data = [[]]
-            self.t4ResultTable.setRowCount(len(data))
-            self.t4ResultTable.setColumnCount(len(data[0]))
+            if data:
+                self.t4ResultTable.setRowCount(len(data))
+                self.t4ResultTable.setColumnCount(len(data[0]))
+            else:
+                self.t4ResultTable.setRowCount(0)
+                self.t4ResultTable.setColumnCount(0)
             header = ['id', 'Автор', "Наименование работы", "Этап", "Голосов", "Макс.",
                       "Мин.", "Сумма", "Ср.балл"]
             self.t4ResultTable.setHorizontalHeaderLabels(header)
@@ -496,19 +505,25 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             self.t4ResultTable.setRowCount(0)
             self.statusbar.showMessage('Результатов нет')
-            logging.error('t4_itog(): ' + str(e))
+            logging.error('t4_itog(1): ' + str(e))
         try:
-            best_film_id = data[self.current_winner][0].text()
-            sql = f"""SELECT v.users, v.vote, 
-                    (SELECT SUM(v2.vote) * 1.0 / (COUNT(v2.vote)) FROM vote v2 WHERE v2.users=v.users) as aver,
-                    (SELECT COUNT(*) FROM winners WHERE users=v.users) as win
-                    FROM vote v
-                    WHERE v.film = {best_film_id}
-                    GROUP BY v.users,v.vote
-                    ORDER BY vote DESC, aver"""
-            users = converter(self.db_operate(sql, state=SqlALL))
-            self.t4UsersTable.setRowCount(len(users))
-            self.t4UsersTable.setColumnCount(len(users[0]))
+            users = []
+            if data:
+                best_film_id = data[self.current_winner][0].text()
+                sql = f"""SELECT v.users, v.vote, 
+                        (SELECT SUM(v2.vote) * 1.0 / (COUNT(v2.vote)) FROM vote v2 WHERE v2.users=v.users) as aver,
+                        (SELECT COUNT(*) FROM winners WHERE users=v.users) as win
+                        FROM vote v
+                        WHERE v.film = {best_film_id}
+                        GROUP BY v.users,v.vote
+                        ORDER BY vote DESC, aver"""
+                users = converter(self.db_operate(sql, state=SqlALL))
+            if users:
+                self.t4UsersTable.setRowCount(len(users))
+                self.t4UsersTable.setColumnCount(len(users[0]))
+            else:
+                self.t4UsersTable.setRowCount(0)
+                self.t4UsersTable.setColumnCount(0)
             self.t4UsersTable.setHorizontalHeaderLabels(['Участник', 'Балл', 'Ср.балл'])
             self.t4UsersTable.hideColumn(3)
             self.t4UsersTable.verticalHeader().hide()
@@ -524,7 +539,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             self.t4UsersTable.setRowCount(0)
             self.statusBar().showMessage('Итогов нет')
-            logging.error('t4_itog(): ' + str(e))
+            logging.error('t4_itog(2): ' + str(e))
 
 
 def converter(data):

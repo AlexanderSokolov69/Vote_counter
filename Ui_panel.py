@@ -7,7 +7,9 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from my_classes import MyLabel
 
+QtWidgets.QLabel = MyLabel
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
