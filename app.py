@@ -200,7 +200,7 @@ def auto_register_user():
         login_user(new_user)
 
 
-@scheduler.task('interval', id='my_job', seconds=3)
+@scheduler.task('interval', id='my_job', seconds=2)
 def my_job():
     with app.app_context():
         try:
@@ -220,7 +220,7 @@ def updates():
 
     def generate():
         while True:
-            time.sleep(3)
+            time.sleep(2)
             if old_state:
                 number = get_number_state()
             else:

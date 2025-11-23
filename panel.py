@@ -56,6 +56,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.httpStr.setText("""http://voteflow.it-cube4303.local:5555""")
         logging.info('Программа запущена')
         self.table_refresh = False
 
@@ -138,9 +139,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                             ret = cur.execute(sql)
                     case 1:
                         if params:
-                            ret = cur.executemany(sql, params)
+                            cur.executemany(sql, params)
                         else:
-                            ret = cur.executemany(sql)
+                            raise pyodbc.OperationalError(f"db_operate(SQLMANY) - no params: {sql}")
                     case 2:
                         if params:
                             ret = cur.execute(sql, params).fetchone()
@@ -457,6 +458,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.t4_itog()
 
     def t4_itog(self):
+        if not self.current_vote:
+            self.t4_timer.stop()
         data = []
         try:
             sql = """SELECT f.id,
