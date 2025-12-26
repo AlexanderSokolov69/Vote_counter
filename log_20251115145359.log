@@ -1,0 +1,53 @@
+2025-11-15 14:53:59,164 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5555
+ * Running on http://172.16.1.42:5555
+2025-11-15 14:53:59,164 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-15 14:54:02,212 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:02] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:54:26,242 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "[32mGET /welcome HTTP/1.1[0m" 302 -
+2025-11-15 14:54:26,256 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "[32mGET /login?next=/welcome HTTP/1.1[0m" 302 -
+2025-11-15 14:54:26,378 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "GET /welcome HTTP/1.1" 200 -
+2025-11-15 14:54:26,695 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:54:26,721 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "GET /static/images/smile_not_like.png HTTP/1.1" 200 -
+2025-11-15 14:54:26,724 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:54:26,729 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-15 14:54:26,731 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "GET /static/images/vote.png HTTP/1.1" 200 -
+2025-11-15 14:54:26,742 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:26] "GET /static/images/smile_like.png HTTP/1.1" 200 -
+2025-11-15 14:54:29,739 - INFO - 172.16.1.42 - - [15/Nov/2025 14:54:29] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:55:04,894 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[32mPOST /welcome HTTP/1.1[0m" 302 -
+2025-11-15 14:55:04,909 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "GET /welcome HTTP/1.1" 200 -
+2025-11-15 14:55:04,944 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:55:04,948 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:04,950 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/images/smile_not_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:04,954 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/images/smile_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:04,956 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/images/vote.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:04,958 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:04] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:07,966 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:07] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:55:28,991 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:28] "GET /welcome HTTP/1.1" 200 -
+2025-11-15 14:55:29,025 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:55:29,029 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:29,029 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/images/smile_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:29,031 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/images/smile_not_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:29,033 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/images/vote.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:29,035 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:29] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:32,045 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:32] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:55:51,988 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:51] "GET /stat HTTP/1.1" 200 -
+2025-11-15 14:55:52,023 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,025 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,725 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[32mGET / HTTP/1.1[0m" 302 -
+2025-11-15 14:55:52,740 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "GET /welcome HTTP/1.1" 200 -
+2025-11-15 14:55:52,781 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,782 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,783 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/smile_not_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,784 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/smile_like.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,794 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/vote.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:52,795 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:52] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-15 14:55:55,046 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:55] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:55:55,797 - INFO - 172.16.1.42 - - [15/Nov/2025 14:55:55] "GET /updates HTTP/1.1" 200 -
+2025-11-15 14:57:10,844 - INFO - 172.16.1.42 - - [15/Nov/2025 14:57:10] "GET /welcome HTTP/1.1" 200 -
+2025-11-15 14:57:10,909 - INFO - 172.16.1.42 - - [15/Nov/2025 14:57:10] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-15 14:57:10,909 - INFO - 172.16.1.42 - - [15/Nov/2025 14:57:10] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-15 14:57:10,914 - INFO - 172.16.1.42 - - [15/Nov/2025 14:57:10] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-15 14:57:13,923 - INFO - 172.16.1.42 - - [15/Nov/2025 14:57:13] "GET /updates HTTP/1.1" 200 -
+2025-11-15 15:03:41,159 - WARNING - Execution of job "my_job (trigger: interval[0:00:03], next run at: 2025-11-15 15:03:41 MSK)" skipped: maximum number of running instances reached (1)
+2025-11-15 15:03:47,167 - WARNING - Execution of job "my_job (trigger: interval[0:00:03], next run at: 2025-11-15 15:03:47 MSK)" skipped: maximum number of running instances reached (1)

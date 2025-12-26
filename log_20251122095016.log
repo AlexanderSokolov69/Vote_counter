@@ -1,0 +1,36 @@
+2025-11-22 09:50:16,497 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5555
+ * Running on http://172.16.1.42:5555
+2025-11-22 09:50:16,498 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-22 09:50:43,736 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:43] "GET /welcome HTTP/1.1" 200 -
+2025-11-22 09:50:43,857 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:43] "GET /static/styles/style.css HTTP/1.1" 200 -
+2025-11-22 09:50:43,884 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:43] "GET /static/images/title.png HTTP/1.1" 200 -
+2025-11-22 09:50:44,113 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:44] "GET /static/images/vote.png HTTP/1.1" 200 -
+2025-11-22 09:50:44,115 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:44] "GET /static/images/smile_not_like.png HTTP/1.1" 200 -
+2025-11-22 09:50:44,115 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:44] "GET /static/images/smile_like.png HTTP/1.1" 200 -
+2025-11-22 09:50:44,229 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:44] "GET /static/images/voteflow-5555.png HTTP/1.1" 200 -
+2025-11-22 09:50:44,559 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:44] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-11-22 09:50:46,089 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:46] "GET /updates HTTP/1.1" 200 -
+2025-11-22 09:50:47,625 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:47] "GET /stat HTTP/1.1" 200 -
+2025-11-22 09:50:47,975 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:47] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-22 09:50:47,976 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:47] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-22 09:50:50,320 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:50] "GET /updates HTTP/1.1" 200 -
+2025-11-22 09:50:58,110 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "[32mGET / HTTP/1.1[0m" 302 -
+2025-11-22 09:50:58,446 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "GET /welcome HTTP/1.1" 200 -
+2025-11-22 09:50:58,794 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-22 09:50:58,795 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-22 09:50:58,795 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "[36mGET /static/images/smile_not_like.png HTTP/1.1[0m" 304 -
+2025-11-22 09:50:58,802 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:58] "[36mGET /static/images/smile_like.png HTTP/1.1[0m" 304 -
+2025-11-22 09:50:59,108 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:59] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-22 09:50:59,108 - INFO - 127.0.0.1 - - [22/Nov/2025 09:50:59] "[36mGET /static/images/vote.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:01,115 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:01] "GET /updates HTTP/1.1" 200 -
+2025-11-22 09:51:05,110 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "[32mPOST /welcome HTTP/1.1[0m" 302 -
+2025-11-22 09:51:05,439 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "GET /welcome HTTP/1.1" 200 -
+2025-11-22 09:51:05,785 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "[36mGET /static/styles/style.css HTTP/1.1[0m" 304 -
+2025-11-22 09:51:05,785 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "[36mGET /static/images/smile_not_like.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:05,786 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "[36mGET /static/images/smile_like.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:05,788 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:05] "[36mGET /static/images/title.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:06,096 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:06] "[36mGET /static/images/vote.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:06,103 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:06] "[36mGET /static/images/voteflow-5555.png HTTP/1.1[0m" 304 -
+2025-11-22 09:51:08,095 - INFO - 127.0.0.1 - - [22/Nov/2025 09:51:08] "GET /updates HTTP/1.1" 200 -
